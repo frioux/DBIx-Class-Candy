@@ -3,6 +3,8 @@ package DBIx::Class::Candy;
 use strict;
 use warnings;
 use namespace::clean;
+require DBIx::Class::Candy::Exports;
+use MRO::Compat;
 
 my $inheritor;
 
@@ -10,6 +12,9 @@ sub _generate {
    my ($class, $name) = @_;
    sub { $inheritor->$name(@_) }
 }
+
+my @custom_methods;
+my %custom_aliases;
 
 my %aliases = (
    # ResultSourceProxy::Table
@@ -23,7 +28,12 @@ sub _generate_alias {
    sub { $inheritor->$meth(@_) }
 }
 
-my @methods =
+my @methods = (
+   # DBIx::Class
+   qw(
+   load_components
+   ),
+
    # ResultSourceProxy::Table
    qw(
    resultset_class
@@ -65,14 +75,15 @@ my @methods =
    # PK
    qw(),
    # Row
-   qw();
+   qw()
+);
 use Sub::Exporter 'setup_exporter';
 setup_exporter({
    exports => [
-      (map { $_ => \'_generate' } @methods),
-      (map { $_ => \'_generate_alias' } keys %aliases),
+      (map { $_ => \'_generate' } @methods, @custom_methods),
+      (map { $_ => \'_generate_alias' } keys %aliases, keys %custom_aliases),
    ],
-   groups  => { default => [ @methods, keys %aliases ] },
+   groups  => { default => [ @methods, keys %aliases, keys %custom_aliases ] },
    installer  => sub {
       Sub::Exporter::default_installer @_;
       namespace::clean->import({
@@ -81,7 +92,18 @@ setup_exporter({
    },
    collectors => [
       INIT => sub {
+         %custom_aliases = ();
+         @custom_methods = ();
          $inheritor = $_[1]->{into};
+
+         for (@{mro::get_linear_isa($inheritor)}) {
+            if (my $hashref = $DBIx::Class::Candy::Exports::aliases{$_}) {
+               %custom_aliases = (%custom_aliases, %{$hashref})
+            }
+            if (my $arrayref = $DBIx::Class::Candy::Exports::methods{$_}) {
+               @custom_methods = (@custom_methods, @{$arrayref})
+            }
+         }
 
          # inlined from parent.pm
          require "DBIx/Class/Core.pm"; # dies if the file is not found
