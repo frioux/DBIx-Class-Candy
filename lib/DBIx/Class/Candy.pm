@@ -2,20 +2,17 @@ package DBIx::Class::Candy;
 
 use strict;
 use warnings;
-require parent;
 
+my $inheritor;
 sub _generate_method {
-   my $foo = scalar caller(3);
    my ($class, $name) = @_;
-   sub { $foo->result_source_instance->$name(@_) }
+   sub { $inheritor->result_source_instance->$name(@_) }
 }
 
 use Sub::Exporter -setup => {
    exports => [
       itable => sub {
-         my $foo = scalar caller(3);
-         warn $foo;
-         sub { $foo->table(@_) }
+         sub { $inheritor->table(@_) }
       },
       map { $_ => \'_generate_method' }
       qw(add_columns)
@@ -23,7 +20,7 @@ use Sub::Exporter -setup => {
    groups  => { default => [ qw(add_columns itable) ] },
    collectors => [
       INIT => sub {
-         my $inheritor = $_[1]->{into};
+         $inheritor = $_[1]->{into};
 
          require "DBIx/Class/Core.pm"; # dies if the file is not found
          {
