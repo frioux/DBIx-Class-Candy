@@ -2,7 +2,7 @@ package A::Result;
 
 use DBIx::Class::Candy;
 
-itable('awesome');
+table('awesome');
 
 add_columns('frew');
 
