@@ -2,66 +2,83 @@ package DBIx::Class::Candy;
 
 use strict;
 use warnings;
+use namespace::clean;
 
 my $inheritor;
 
-sub _generate_simple {
+sub _generate {
    my ($class, $name) = @_;
-   sub { $inheritor->result_source_instance->$name(@_) }
+   sub { $inheritor->$name(@_) }
 }
 
-sub _generate_complex {
+my %aliases = (
+   # ResultSourceProxy::Table
+   column => 'add_columns',
+   primary_key => 'set_primary_key'
+);
+
+sub _generate_alias {
    my ($class, $name) = @_;
-   require DBIx::Class::ResultSourceProxy::Table;
-   my $fn = DBIx::Class::ResultSourceProxy::Table->can($name);
-   sub { $inheritor->$fn(@_) }
+   my $meth = $aliases{$name};
+   sub { $inheritor->$meth(@_) }
 }
 
-my @simple_methods;
-my @complex_methods;
+my @methods =
+   # ResultSourceProxy::Table
+   qw(
+   resultset_class
+   result_class
+   source_info
+   resultset_attributes
+   has_column
+   column_info
+   column_info_from_storage
+   columns
+   remove_columns
+   set_primary_key
+   primary_columns
+   add_unique_constraint
+   unique_constraints
+   unique_constraint_names
+   unique_constraint_columns
+   relationships
+   relationship_info
+   has_relationship
+   table
+   add_columns
+   add_column
+   add_relationship
+   remove_column
+   source_name
+),
+   #_pri_cols
+   #iterator_class
+   #set_inherited_ro_instance
+   #get_inherited_ro_instance
 
-BEGIN {
-   @simple_methods = qw(
-      resultset_class
-      result_class
-      source_info
-      resultset_attributes
-      has_column
-      column_info
-      column_info_from_storage
-      columns
-      remove_columns
-      set_primary_key
-      primary_columns
-      _pri_cols
-      add_unique_constraint
-      unique_constraints
-      unique_constraint_names
-      unique_constraint_columns
-      relationships
-      relationship_info
-      has_relationship
-   );
-
-   @complex_methods = qw(
-      table
-      add_columns
-      add_column
-      add_relationship
-      remove_column
-      iterator_class
-      set_inherited_ro_instance
-      get_inherited_ro_instance
-      source_name
-   );
-}
-
-use Sub::Exporter -setup => {
+   # InflateColumn
+   qw(),
+   # Relationship
+   qw(),
+   # PK::Auto
+   qw(),
+   # PK
+   qw(),
+   # Row
+   qw();
+use Sub::Exporter 'setup_exporter';
+setup_exporter({
    exports => [
-      (map { $_ => \'_generate_complex' } @complex_methods),
-      (map { $_ => \'_generate_simple' } @simple_methods)
+      (map { $_ => \'_generate' } @methods),
+      (map { $_ => \'_generate_alias' } keys %aliases),
    ],
-   groups  => { default => [ @simple_methods, qw(add_columns table) ] },
+   groups  => { default => [ @methods, keys %aliases ] },
+   installer  => sub {
+      Sub::Exporter::default_installer @_;
+      namespace::clean->import({
+         -cleanee => $inheritor,
+      })
+   },
    collectors => [
       INIT => sub {
          $inheritor = $_[1]->{into};
@@ -79,6 +96,6 @@ use Sub::Exporter -setup => {
          warnings->import;
       }
    ],
-};
+});
 
 1;

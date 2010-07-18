@@ -1,9 +1,10 @@
 package A::Result;
 
 use DBIx::Class::Candy;
+use namespace::clean;
 
-table('awesome');
+table 'awesome';
 
-add_columns('frew');
+column 'frew';
 
 1;
