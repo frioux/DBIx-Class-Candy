@@ -154,7 +154,7 @@ sub import {
          $base = $_[$idx + 1];
          $skipnext = 1;
       } elsif ( $val eq '-perl5' ) {
-         $perl_version = $_[$idx + 1];
+         $perl_version = ord $_[$idx + 1];
          $skipnext = 1;
       } elsif ( $val eq '-components' ) {
          $components = $_[$idx + 1];
