@@ -2,7 +2,7 @@ package DBIx::Class::Candy;
 
 use strict;
 use warnings;
-use namespace::clean;
+use namespace::autoclean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
 
@@ -77,8 +77,12 @@ my @methods = (
    # Row
    qw()
 );
-use Sub::Exporter 'setup_exporter';
-setup_exporter({
+use Sub::Exporter 'build_exporter';
+my $base;
+my $perl_version;
+my $components;
+
+my $import = build_exporter({
    exports => [
       (map { $_ => \'_generate' } @methods, @custom_methods),
       (map { $_ => \'_generate_alias' } keys %aliases, keys %custom_aliases),
@@ -86,16 +90,32 @@ setup_exporter({
    groups  => { default => [ @methods, keys %aliases, keys %custom_aliases ] },
    installer  => sub {
       Sub::Exporter::default_installer @_;
-      namespace::clean->import({
+      namespace::autoclean->import(
          -cleanee => $inheritor,
-      })
+      )
    },
    collectors => [
       INIT => sub {
+         my $orig = $_[1]->{import_args};
+         $_[1]->{import_args} = [];
          %custom_aliases = ();
          @custom_methods = ();
          $inheritor = $_[1]->{into};
 
+         # inlined from parent.pm
+         for ( my @useless = $base ) {
+            s{::|'}{/}g;
+            require "$_.pm"; # dies if the file is not found
+         }
+
+         {
+            no strict 'refs';
+            # This is more efficient than push for the new MRO
+            # at least until the new MRO is fixed
+            @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $base);
+         }
+
+         $inheritor->load_components(@{$components});
          for (@{mro::get_linear_isa($inheritor)}) {
             if (my $hashref = $DBIx::Class::Candy::Exports::aliases{$_}) {
                %custom_aliases = (%custom_aliases, %{$hashref})
@@ -105,19 +125,49 @@ setup_exporter({
             }
          }
 
-         # inlined from parent.pm
-         require "DBIx/Class/Core.pm"; # dies if the file is not found
-         {
-            no strict 'refs';
-            # This is more efficient than push for the new MRO
-            # at least until the new MRO is fixed
-            @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , 'DBIx::Class::Core');
-         }
-
          strict->import;
          warnings->import;
       }
    ],
 });
+
+sub import {
+   my $self = shift;
+
+   $base = 'DBIx::Class::Core';
+   $perl_version = undef;
+   $components = [];
+
+   my @rest;
+
+   my $skipnext;
+   for my $idx ( 0 .. $#_ ) {
+      my $val = $_[$idx];
+
+      next unless defined $val;
+      if ($skipnext) {
+         $skipnext--;
+         next;
+      }
+
+      if ( $val eq '-base' ) {
+         $base = $_[$idx + 1];
+         $skipnext = 1;
+      } elsif ( $val eq '-perl5' ) {
+         $perl_version = $_[$idx + 1];
+         $skipnext = 1;
+      } elsif ( $val eq '-components' ) {
+         $components = $_[$idx + 1];
+         $skipnext = 1;
+      } else {
+         push @rest, $val;
+      }
+   }
+
+   @_ = ($self, @rest);
+   goto $import
+}
+
+# < mst> use DBIx::Class::Candy -base => 'Foo', -components => [ 'One', 'Two' ];
 
 1;

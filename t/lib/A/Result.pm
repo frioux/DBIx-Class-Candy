@@ -1,10 +1,12 @@
 package A::Result;
 
-use DBIx::Class::Candy;
-use namespace::clean;
+use DBIx::Class::Candy
+   -perl5 => 10,
+   -components => ['+A::Component'],
+   -base => 'DBIx::Class::Core',
+   ;
 
 table 'awesome';
-load_components '+A::Component';
 column 'frew';
 giant_robot();
 1;
