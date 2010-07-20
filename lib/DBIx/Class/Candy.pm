@@ -6,6 +6,8 @@ use namespace::autoclean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
 
+# ABSTRACT: Sugar for your favorite ORM, DBIx::Class
+
 my $inheritor;
 
 sub _generate {
@@ -233,3 +235,58 @@ sub import {
 
  1;
 
+=head1 DESCRIPTION
+
+C<DBIx::Class::Candy> is a simple sugar layer for definition of
+L<DBIx::Class> results.  Note that it may later be expanded to add sugar
+for more C<DBIx::Class> related things.  By default C<DBIx::Class::Candy>:
+
+=over
+
+=item *
+
+turns on strict and warnings
+
+=item *
+
+sets your parent class
+
+=item *
+
+exports a bunch of the package methods that you normally use to define your
+L<DBIx::Class> results
+
+=item *
+
+makes a few aliases to make some of the original method names a shorter or
+more clear
+
+=back
+
+It assumes a L<DBIx::Class::Core>-like API, but you can tailor it to suit
+your needs.
+
+=head1 IMPORT OPTIONS
+
+=head2 -base
+
+ use DBIx::Class::Candy -base => 'MyApp::Schema::Result';
+
+The first thing you can do to customize your usage of C<DBIx::Class::Candy>
+is change the parent class.  Do that by using the C<-base> import option.
+
+=head2 -components
+
+ use DBIx::Class::Candy -components => ['FilterColumn'];
+
+C<DBIx::Class::Candy> allows you to set which components you are using at
+import time so that the components can define their own sugar to export as
+well.  See L<DBIx::Class::Candy::Exports> for details on how that works.
+
+=head2 -perl5
+
+ use DBIx::Class::Candy -perl5 => v10;
+
+I love the new features in Perl 5.10 and 5.12, so I felt that it would be
+nice to remove the boiler plate of doing C<< use feature ':5.10' >> and
+add it to my sugar importer.  Feel free not to use this.
