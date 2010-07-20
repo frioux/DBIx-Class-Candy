@@ -48,34 +48,70 @@ my @methods = (
    set_primary_key
    primary_columns
    add_unique_constraint
-   unique_constraints
-   unique_constraint_names
-   unique_constraint_columns
-   relationships
-   relationship_info
-   has_relationship
    table
    add_columns
    add_column
    add_relationship
    remove_column
    source_name
-),
+   ),
    #_pri_cols
    #iterator_class
    #set_inherited_ro_instance
    #get_inherited_ro_instance
+   #unique_constraints
+   #unique_constraint_names
+   #unique_constraint_columns
+   #relationships
+   #relationship_info
+   #has_relationship
 
    # InflateColumn
-   qw(),
+   'inflate_column',
    # Relationship
-   qw(),
+   qw(
+   belongs_to
+   has_many
+   might_have
+   has_one
+   many_to_many
+   ),
+
    # PK::Auto
-   qw(),
+   'sequence',
    # PK
    qw(),
    # Row
-   qw()
+   qw(
+   result_source
+   register_column
+   )
+   #new
+   #insert
+   #in_storage
+   #update
+   #delete
+   #get_column
+   #throw_exception
+   #id
+   #discard_changes
+   #discard_changes ($attrs)
+   #get_columns
+   #get_dirty_columns
+   #make_column_dirty
+   #get_inflated_columns
+   #set_column
+   #set_columns
+   #set_inflated_columns
+   #copy
+   #store_column
+   #inflate_result
+   #update_or_insert
+   #insert_or_update
+   #is_changed
+   #is_column_changed
+   #has_column_loaded
+   #get_from_storage
 );
 use Sub::Exporter 'build_exporter';
 my $base;
@@ -167,7 +203,5 @@ sub import {
    @_ = ($self, @rest);
    goto $import
 }
-
-# < mst> use DBIx::Class::Candy -base => 'Foo', -components => [ 'One', 'Two' ];
 
 1;
