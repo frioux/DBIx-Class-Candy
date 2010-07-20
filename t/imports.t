@@ -3,12 +3,14 @@ use warnings;
 use Test::More;
 
 use lib 't/lib';
-use A::Result;
+use A::Schema;
 
-isa_ok 'A::Result', 'DBIx::Class::Core';
+my $result_class =A::Schema->resultset('Album')->result_class;
+isa_ok $result_class, 'DBIx::Class::Core';
 
-is( 'A::Result'->table, 'awesome', 'table set correctly' );
-my @cols = 'A::Result'->columns;
-is( $cols[0], 'frew', 'column set correctly' );
+is( $result_class->table, 'albums', 'table set correctly' );
+my @cols = $result_class->columns;
+is( $cols[0], 'id', 'id column set correctly' );
+is( $cols[1], 'name', 'name column set correctly' );
 
 done_testing;
