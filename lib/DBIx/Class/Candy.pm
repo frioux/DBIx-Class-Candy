@@ -19,7 +19,6 @@ my @custom_methods;
 my %custom_aliases;
 
 my %aliases = (
-   # ResultSourceProxy::Table
    column            => 'add_columns',
    primary_key       => 'set_primary_key',
    unique_constraint => 'add_unique_constraint',
@@ -33,90 +32,23 @@ sub _generate_alias {
 }
 
 my @methods = (
-   # DBIx::Class
-   qw(
-   load_components
-   ),
-
-   # ResultSourceProxy::Table
    qw(
    resultset_class
-   result_class
-   source_info
    resultset_attributes
-   has_column
-   column_info
-   column_info_from_storage
-   columns
    remove_columns
-   set_primary_key
-   primary_columns
-   add_unique_constraint
-   table
-   add_columns
-   add_column
-   add_relationship
    remove_column
+   table
    source_name
-   ),
-   #_pri_cols
-   #iterator_class
-   #set_inherited_ro_instance
-   #get_inherited_ro_instance
-   #unique_constraints
-   #unique_constraint_names
-   #unique_constraint_columns
-   #relationships
-   #relationship_info
-   #has_relationship
-
-   # InflateColumn
-   'inflate_column',
-   # Relationship
-   qw(
+   inflate_colum
    belongs_to
    has_many
    might_have
    has_one
    many_to_many
-   ),
-
-   # PK::Auto
-   'sequence',
-   # PK
-   qw(),
-   # Row
-   qw(
-   result_source
-   register_column
+   sequence
    )
-   #new
-   #insert
-   #in_storage
-   #update
-   #delete
-   #get_column
-   #throw_exception
-   #id
-   #discard_changes
-   #discard_changes ($attrs)
-   #get_columns
-   #get_dirty_columns
-   #make_column_dirty
-   #get_inflated_columns
-   #set_column
-   #set_columns
-   #set_inflated_columns
-   #copy
-   #store_column
-   #inflate_result
-   #update_or_insert
-   #insert_or_update
-   #is_changed
-   #is_column_changed
-   #has_column_loaded
-   #get_from_storage
 );
+
 use Sub::Exporter 'build_exporter';
 my $base;
 my $perl_version;
