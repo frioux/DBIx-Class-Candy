@@ -1,6 +1,6 @@
 package A::Schema;
 
-use parent 'DBIx::Class::Schema';
+use base 'DBIx::Class::Schema';
 
 __PACKAGE__->load_namespaces();
 

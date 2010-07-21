@@ -1,5 +1,5 @@
 package A::Schema::Result;
 
-use parent 'DBIx::Class::Core';
+use base 'DBIx::Class::Core';
 
 1;
