@@ -25,5 +25,11 @@ primary_key 'id';
 
 has_many songs => 'A::Schema::Result::Song', 'album_id';
 
+sub test_strict {
+	require Test::More;
+	eval '$foo = 1';
+	Test::More::ok($@, 'strict mode is on');
+}
+
 1;
 
