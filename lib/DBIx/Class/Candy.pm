@@ -2,7 +2,7 @@ package DBIx::Class::Candy;
 
 use strict;
 use warnings;
-use namespace::autoclean;
+use namespace::clean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
 
@@ -31,22 +31,23 @@ sub _generate_alias {
    sub { $inheritor->$meth(@_) }
 }
 
-my @methods = (
-   qw(
+my @methods = qw(
    resultset_class
    resultset_attributes
    remove_columns
    remove_column
    table
    source_name
+
    inflate_colum
+
    belongs_to
    has_many
    might_have
    has_one
    many_to_many
+
    sequence
-   )
 );
 
 use Sub::Exporter 'build_exporter';
@@ -59,10 +60,14 @@ my $import = build_exporter({
       (map { $_ => \'_generate' } @methods, @custom_methods),
       (map { $_ => \'_generate_alias' } keys %aliases, keys %custom_aliases),
    ],
-   groups  => { default => [ @methods, keys %aliases, keys %custom_aliases ] },
+   groups  => {
+      default => [
+         @methods, @custom_methods, keys %aliases, keys %custom_aliases
+      ],
+   },
    installer  => sub {
       Sub::Exporter::default_installer @_;
-      namespace::autoclean->import(
+      namespace::clean->import(
          -cleanee => $inheritor,
       )
    },
@@ -97,8 +102,15 @@ my $import = build_exporter({
             }
          }
 
+         if ($perl_version) {
+            require feature;
+            feature->import(":5.$perl_version")
+         }
+
          strict->import;
          warnings->import;
+
+         1;
       }
    ],
 });
@@ -230,8 +242,24 @@ add it to my sugar importer.  Feel free not to use this.
 Most of the imported subroutines are the same as what you get when you use
 the normal interface for result definition: they have the same names and take
 the same arguments.  In general write the code the way you normally would,
-leaving out the C<< __PACKAGE__-> >> part.  There are some
-exceptions though, which brings us to:
+leaving out the C<< __PACKAGE__-> >> part.  The following are methods that
+are exported with the same name and arguments:
+
+ belongs_to
+ has_many
+ has_one
+ inflate_colum
+ many_to_many
+ might_have
+ remove_column
+ remove_columns
+ resultset_attributes
+ resultset_class
+ sequence
+ source_name
+ table
+
+There are some exceptions though, which brings us to:
 
 =head1 IMPORTED ALIASES
 
