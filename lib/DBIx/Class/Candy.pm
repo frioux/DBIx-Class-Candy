@@ -20,8 +20,10 @@ my %custom_aliases;
 
 my %aliases = (
    # ResultSourceProxy::Table
-   column => 'add_columns',
-   primary_key => 'set_primary_key'
+   column            => 'add_columns',
+   primary_key       => 'set_primary_key',
+   unique_constraint => 'add_unique_constraint',
+   relationship      => 'add_relationship',
 );
 
 sub _generate_alias {
@@ -290,3 +292,24 @@ well.  See L<DBIx::Class::Candy::Exports> for details on how that works.
 I love the new features in Perl 5.10 and 5.12, so I felt that it would be
 nice to remove the boiler plate of doing C<< use feature ':5.10' >> and
 add it to my sugar importer.  Feel free not to use this.
+
+=head1 IMPORTED SUBROUTINES
+
+Most of the imported subroutines are the same as what you get when you use
+the normal interface for result definition: they have the same names and take
+the same arguments.  In general write the code the way you normally would,
+leaving out the C<< __PACKAGE__-> >> part.  There are some
+exceptions though, which brings us to:
+
+=head1 IMPORTED ALIASES
+
+These are merely renamed versions of the functions you know and love.  The idea is
+to make your result classes a tiny bit prettier by aliasing some methods.
+If you know your C<DBIx::Class> API you noticed that in the L</SYNOPSIS> I used C<column>
+instead of C<add_columns> and C<primary_key> instead of C<set_primary_key>.  The old
+versions work, this is just nicer.  A list of aliases are as follows:
+
+ column            => 'add_columns',
+ primary_key       => 'set_primary_key',
+ unique_constraint => 'add_unique_constraint',
+ relationship      => 'add_relationship',
