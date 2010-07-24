@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.001002  2010-07-24 01:21:49 CST6CDT
        - Fix bug uncovered by doing belongs_to twice in a class
 
 0.001001  2010-07-21 17:48:14 CST6CDT
