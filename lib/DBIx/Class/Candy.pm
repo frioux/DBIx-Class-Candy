@@ -12,7 +12,8 @@ my $inheritor;
 
 sub _generate {
    my ($class, $name) = @_;
-   sub { $inheritor->$name(@_) }
+   my $i = $inheritor;
+   sub { $i->$name(@_) }
 }
 
 my @custom_methods;
@@ -28,7 +29,8 @@ my %aliases = (
 sub _generate_alias {
    my ($class, $name) = @_;
    my $meth = $aliases{$name};
-   sub { $inheritor->$meth(@_) }
+   my $i = $inheritor;
+   sub { $i->$meth(@_) }
 }
 
 my @methods = qw(
