@@ -2,6 +2,11 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.001003  2010-07-29 20:20:14 CST6CDT
+       - Fix more bugs, this time the are from inheriting from other
+         other results
+       - Make ::Exports actually work
+
 0.001002  2010-07-24 01:21:49 CST6CDT
        - Fix bug uncovered by doing belongs_to twice in a class
 
