@@ -9,30 +9,12 @@ use Sub::Exporter 'build_exporter';
 
 # ABSTRACT: Sugar for your favorite ORM, DBIx::Class
 
-my $inheritor;
-
-sub _generate {
-   my ($class, $name) = @_;
-   my $i = $inheritor;
-   sub { $i->$name(@_) }
-}
-
-my @custom_methods;
-my %custom_aliases;
-
 my %aliases = (
    column            => 'add_columns',
    primary_key       => 'set_primary_key',
    unique_constraint => 'add_unique_constraint',
    relationship      => 'add_relationship',
 );
-
-sub _generate_alias {
-   my ($class, $name) = @_;
-   my $meth = $aliases{$name} || $custom_aliases{$name};
-   my $i = $inheritor;
-   sub { $i->$meth(@_) }
-}
 
 my @methods = qw(
    resultset_class
@@ -60,9 +42,11 @@ sub import {
    my $perl_version = undef;
    my $components = [];
 
+   my @custom_methods;
+   my %custom_aliases;
    my @rest;
 
-   $inheritor = caller(0);
+   my $inheritor = caller(0);
    my $skipnext;
    for my $idx ( 0 .. $#_ ) {
       my $val = $_[$idx];
@@ -99,9 +83,7 @@ sub import {
       # at least until the new MRO is fixed
       @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $base);
    }
-
    $inheritor->load_components(@{$components});
-
    for (@{mro::get_linear_isa($inheritor)}) {
       if (my $hashref = $DBIx::Class::Candy::Exports::aliases{$_}) {
          %custom_aliases = (%custom_aliases, %{$hashref})
@@ -114,8 +96,15 @@ sub import {
    @_ = ($self, @rest);
    my $import = build_exporter({
       exports => [
-         (map { $_ => \'_generate' } @methods, @custom_methods),
-         (map { $_ => \'_generate_alias' } keys %aliases, keys %custom_aliases),
+         (map { $_ => sub {
+            my ($class, $name) = @_;
+            sub { $inheritor->$name(@_) }
+         } } @methods, @custom_methods),
+         (map { $_ => sub {
+            my ($class, $name) = @_;
+            my $meth = $aliases{$name} || $custom_aliases{$name};
+            sub { $inheritor->$meth(@_) }
+         } } keys %aliases, keys %custom_aliases),
       ],
       groups  => {
          default => [
