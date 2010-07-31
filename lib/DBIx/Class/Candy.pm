@@ -98,12 +98,14 @@ sub import {
       exports => [
          (map { $_ => sub {
             my ($class, $name) = @_;
-            sub { $inheritor->$name(@_) }
+            my $i = $inheritor;
+            sub { $i->$name(@_) }
          } } @methods, @custom_methods),
          (map { $_ => sub {
             my ($class, $name) = @_;
             my $meth = $aliases{$name} || $custom_aliases{$name};
-            sub { $inheritor->$meth(@_) }
+            my $i = $inheritor;
+            sub { $i->$meth(@_) }
          } } keys %aliases, keys %custom_aliases),
       ],
       groups  => {
