@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.001004  2010-07-31 01:46:04 CST6CDT
+       - Fix a bug that only appears in perl 5.8
+
 0.001003  2010-07-29 20:20:14 CST6CDT
        - Fix more bugs, this time the are from inheriting from other
          other results
