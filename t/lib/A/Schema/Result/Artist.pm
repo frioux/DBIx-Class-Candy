@@ -9,11 +9,11 @@ column id => {
    is_auto_increment => 1,
 };
 
-column name => {
+has_column name => (
    data_type => 'varchar',
    size => 25,
    is_nullable => 1,
-};
+);
 
 primary_key 'id';
 

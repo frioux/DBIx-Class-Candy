@@ -10,11 +10,11 @@ column id => {
    is_numeric => 1,
 };
 
-column name => {
+has_column name => (
    data_type => 'varchar',
    size => 25,
    is_nullable => 1,
-};
+);
 
 column artist_id => {
    data_type => 'int',

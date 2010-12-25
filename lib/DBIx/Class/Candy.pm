@@ -96,6 +96,13 @@ sub import {
    @_ = ($self, @rest);
    my $import = build_exporter({
       exports => [
+         has_column => sub {
+            my $i = $inheritor;
+            sub {
+               my $column = shift;
+               $i->add_columns($column => { @_ })
+            }
+         },
          (map { $_ => sub {
             my ($class, $name) = @_;
             my $i = $inheritor;
@@ -110,7 +117,7 @@ sub import {
       ],
       groups  => {
          default => [
-            @methods, @custom_methods, keys %aliases, keys %custom_aliases
+            'has_column', @methods, @custom_methods, keys %aliases, keys %custom_aliases
          ],
       },
       installer  => sub {
@@ -204,6 +211,10 @@ L<DBIx::Class> results
 makes a few aliases to make some of the original method names a shorter or
 more clear
 
+=item *
+
+defines very few new subroutines that transform the arguments passed to them
+
 =back
 
 It assumes a L<DBIx::Class::Core>-like API, but you can tailor it to suit
@@ -270,3 +281,17 @@ versions work, this is just nicer.  A list of aliases are as follows:
  primary_key       => 'set_primary_key',
  unique_constraint => 'add_unique_constraint',
  relationship      => 'add_relationship',
+
+=head1 SECONDARY API
+
+Lastly, there is currently a single "transformer" for C<add_columns>, so that
+people used to the L<Moose> api will feel more at home.  Note that this B<may>
+go into a "Candy Component" at some point.
+
+Example usage:
+
+ has_column foo => (
+   data_type => 'varchar',
+   size => 25,
+   is_nullable => 1,
+ );

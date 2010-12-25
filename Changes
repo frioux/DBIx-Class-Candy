@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Initial sketches of "Moosey" API
+  - Merry Christmas!!!
 
 0.001004  2010-07-31 01:46:04 CST6CDT
   - Fix a bug that only appears in perl 5.8
