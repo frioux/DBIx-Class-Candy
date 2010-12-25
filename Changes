@@ -3,19 +3,19 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
 
 0.001004  2010-07-31 01:46:04 CST6CDT
-       - Fix a bug that only appears in perl 5.8
+  - Fix a bug that only appears in perl 5.8
 
 0.001003  2010-07-29 20:20:14 CST6CDT
-       - Fix more bugs, this time the are from inheriting from other
-         other results
-       - Make ::Exports actually work
+  - Fix more bugs, this time the are from inheriting from other
+    other results
+  - Make ::Exports actually work
 
 0.001002  2010-07-24 01:21:49 CST6CDT
-       - Fix bug uncovered by doing belongs_to twice in a class
+  - Fix bug uncovered by doing belongs_to twice in a class
 
 0.001001  2010-07-21 17:48:14 CST6CDT
-       - Don't require parent for tests
+  - Don't require parent for tests
 
 0.001000  2010-07-21 00:18:10 CST6CDT
-       - Initial Release
+  - Initial Release
 
