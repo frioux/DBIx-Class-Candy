@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.001005  2010-12-25 10:06:15 CST6CDT
   - Initial sketches of "Moosey" API
   - Merry Christmas!!!
 
