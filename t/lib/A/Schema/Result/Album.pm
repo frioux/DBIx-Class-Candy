@@ -4,7 +4,7 @@ use DBIx::Class::Candy -base => 'A::Schema::Result';
 
 table 'albums';
 
-column id => {
+primary_column id => {
    data_type => 'int',
    is_auto_increment => 1,
    is_numeric => 1,
@@ -21,14 +21,12 @@ column artist_id => {
    is_nullable => 0,
 };
 
-primary_key 'id';
-
 has_many songs => 'A::Schema::Result::Song', 'album_id';
 
 sub test_strict {
-	require Test::More;
-	eval '$foo = 1';
-	Test::More::ok($@, 'strict mode is on');
+   require Test::More;
+   eval '$foo = 1';
+   Test::More::ok($@, 'strict mode is on');
 }
 
 1;

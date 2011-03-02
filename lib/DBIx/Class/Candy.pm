@@ -103,6 +103,15 @@ sub import {
                $i->add_columns($column => { @_ })
             }
          },
+         primary_column => sub {
+            my $i = $inheritor;
+            sub {
+               my $column = shift;
+               my $info   = shift;
+               $i->add_columns($column => $info);
+               $i->set_primary_key($column);
+            }
+         },
          (map { $_ => sub {
             my ($class, $name) = @_;
             my $i = $inheritor;
@@ -117,7 +126,7 @@ sub import {
       ],
       groups  => {
          default => [
-            'has_column', @methods, @custom_methods, keys %aliases, keys %custom_aliases
+            'has_column', 'primary_column', @methods, @custom_methods, keys %aliases, keys %custom_aliases
          ],
       },
       installer  => sub {
