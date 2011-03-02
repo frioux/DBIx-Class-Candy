@@ -24,7 +24,7 @@ my @methods = qw(
    table
    source_name
 
-   inflate_colum
+   inflate_column
 
    belongs_to
    has_many
@@ -256,7 +256,7 @@ are exported with the same name and arguments:
  belongs_to
  has_many
  has_one
- inflate_colum
+ inflate_column
  many_to_many
  might_have
  remove_column
