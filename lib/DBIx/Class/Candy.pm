@@ -293,7 +293,9 @@ versions work, this is just nicer.  A list of aliases are as follows:
 
 =head1 SECONDARY API
 
-Lastly, there is currently a single "transformer" for C<add_columns>, so that
+=head2 has_column
+
+There is currently a single "transformer" for C<add_columns>, so that
 people used to the L<Moose> api will feel more at home.  Note that this B<may>
 go into a "Candy Component" at some point.
 
@@ -304,3 +306,13 @@ Example usage:
    size => 25,
    is_nullable => 1,
  );
+
+=head2 primary_column
+
+Another handy little feature that allows you to define a column and set it as
+the primary key in a single call:
+
+ primary_column id => {
+   data_type => 'int',
+   is_auto_increment => 1,
+ };
