@@ -6,6 +6,8 @@ use namespace::clean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
 use Sub::Exporter 'build_exporter';
+use Lingua::EN::Inflect ();
+use String::CamelCase ();
 
 # ABSTRACT: Sugar for your favorite ORM, DBIx::Class
 
@@ -34,6 +36,19 @@ my @methods = qw(
 
    sequence
 );
+
+sub candy_base { return $_[1] }
+
+sub candy_autotable { 0 }
+
+sub candy_gentable {
+   my $class = $_[0];
+   my $part = $class =~ /::Schema::Resultset::(.+)$/;
+   $part =~ s/:://g;
+   $part = String::CamelCase::decamelize($part);
+   join q{_}, split /\s+/,
+      Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
+}
 
 sub import {
    my $self = shift;
@@ -72,7 +87,7 @@ sub import {
    }
 
    # inlined from parent.pm
-   for ( my @useless = $base ) {
+   for ( my @useless = $self->candy_base($base) ) {
       s{::|'}{/}g;
       require "$_.pm"; # dies if the file is not found
    }
@@ -81,7 +96,7 @@ sub import {
       no strict 'refs';
       # This is more efficient than push for the new MRO
       # at least until the new MRO is fixed
-      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $base);
+      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->candy_base($base));
    }
    $inheritor->load_components(@{$components});
    for (@{mro::get_linear_isa($inheritor)}) {
@@ -149,6 +164,8 @@ sub import {
 
             strict->import;
             warnings->import;
+
+            $self->table($self->candy_gentable) if $self->candy_autotable;
 
             1;
          }
