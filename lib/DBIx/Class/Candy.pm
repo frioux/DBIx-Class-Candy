@@ -144,12 +144,7 @@ sub import {
             'has_column', 'primary_column', @methods, @custom_methods, keys %aliases, keys %custom_aliases
          ],
       },
-      installer  => sub {
-         Sub::Exporter::default_installer @_;
-         namespace::clean->import(
-            -cleanee => $inheritor,
-         )
-      },
+      installer  => $self->installer($inheritor),
       collectors => [
          INIT => sub {
             my $orig = $_[1]->{import_args};
@@ -173,6 +168,14 @@ sub import {
    });
 
    goto $import
+}
+
+sub installer {
+  my ($self, $inheritor) = @_;
+  sub {
+    Sub::Exporter::default_installer @_;
+    namespace::clean->import( -cleanee => $inheritor )
+  }
 }
 
 1;
