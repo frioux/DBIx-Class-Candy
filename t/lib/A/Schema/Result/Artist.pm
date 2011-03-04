@@ -1,6 +1,6 @@
 package A::Schema::Result::Artist;
 
-use DBIx::Class::Candy -base => 'A::Schema::Result';
+use A::Schema::Candy;
 
 table 'artists';
 
