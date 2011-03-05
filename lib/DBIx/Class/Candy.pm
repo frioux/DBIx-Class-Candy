@@ -116,11 +116,7 @@ sub import {
                $i->set_primary_key($column);
             }
          },
-         (map { $_ => sub {
-            my ($class, $name) = @_;
-            my $i = $inheritor;
-            sub { $i->$name(@_) }
-         } } @methods, @custom_methods),
+         (map { $_ => $self->gen_proxy($inheritor) } @methods, @custom_methods),
          (map { $_ => $self->gen_rename_proxy($inheritor, \%aliases, \%custom_aliases) }
             keys %aliases, keys %custom_aliases),
       ],
@@ -162,6 +158,15 @@ sub gen_rename_proxy {
     my $meth = $aliases->{$name} || $custom_aliases->{$name};
     my $i = $inheritor;
     sub { $i->$meth(@_) }
+  }
+}
+
+sub gen_proxy {
+  my ($self, $inheritor) = @_;
+  sub {
+    my ($class, $name) = @_;
+    my $i = $inheritor;
+    sub { $i->$name(@_) }
   }
 }
 
