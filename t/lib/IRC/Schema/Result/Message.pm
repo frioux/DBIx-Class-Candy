@@ -4,7 +4,7 @@ use DBIx::Class::Candy -base => 'IRC::Schema::Result';
 
 table 'Messages';
 
-column id => {
+primary_column id => {
    data_type => 'int',
    is_auto_increment => 1,
 };
@@ -29,8 +29,6 @@ column value => {
 column when_said => {
    data_type => 'datetime',
 };
-
-primary_key 'id';
 
 belongs_to user => 'IRC::Schema::Result::User', 'user_id';
 belongs_to mode => 'IRC::Schema::Result::Mode', 'mode_id';
