@@ -53,39 +53,13 @@ sub candy_gentable {
 sub import {
    my $self = shift;
 
-   my $base = 'DBIx::Class::Core';
-   my $perl_version = undef;
-   my $components = [];
-
-   my @rest;
-
    my $inheritor = caller(0);
-   my $skipnext;
-   for my $idx ( 0 .. $#_ ) {
-      my $val = $_[$idx];
+   my $args         = $self->parse_arguments(\@_);
+   my $perl_version = $args->{perl_version};
+   my @rest         = @{$args->{rest}};
 
-      next unless defined $val;
-      if ($skipnext) {
-         $skipnext--;
-         next;
-      }
-
-      if ( $val eq '-base' ) {
-         $base = $_[$idx + 1];
-         $skipnext = 1;
-      } elsif ( $val eq '-perl5' ) {
-         $perl_version = ord $_[$idx + 1];
-         $skipnext = 1;
-      } elsif ( $val eq '-components' ) {
-         $components = $_[$idx + 1];
-         $skipnext = 1;
-      } else {
-         push @rest, $val;
-      }
-   }
-
-   $self->set_base($inheritor, $base);
-   $inheritor->load_components(@{$components});
+   $self->set_base($inheritor, $args->{base});
+   $inheritor->load_components(@{$args->{components}});
    my @custom_methods;
    my %custom_aliases;
    {
@@ -147,6 +121,46 @@ sub gen_custom_imports {
     }
   }
   return(\@methods, \%aliases)
+}
+
+sub parse_arguments {
+  my $self = shift;
+  my @args = @{shift @_};
+
+  my $skipnext;
+  my $base;
+  my @rest;
+  my $perl_version = undef;
+  my $components   = [];
+  for my $idx ( 0 .. $#args ) {
+    my $val = $args[$idx];
+
+    next unless defined $val;
+    if ($skipnext) {
+      $skipnext--;
+      next;
+    }
+
+    if ( $val eq '-base' ) {
+      $base = $args[$idx + 1];
+      $skipnext = 1;
+    } elsif ( $val eq '-perl5' ) {
+      $perl_version = ord $args[$idx + 1];
+      $skipnext = 1;
+    } elsif ( $val eq '-components' ) {
+      $components = $args[$idx + 1];
+      $skipnext = 1;
+    } else {
+      push @rest, $val;
+    }
+  }
+
+  return {
+    base         => $base,
+    perl_version => $perl_version,
+    components   => $components,
+    rest         => \@rest,
+  };
 }
 
 sub gen_primary_column {
