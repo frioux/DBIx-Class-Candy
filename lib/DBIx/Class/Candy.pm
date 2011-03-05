@@ -84,24 +84,7 @@ sub import {
       },
       installer  => $self->installer($inheritor),
       collectors => [
-         INIT => sub {
-            my $orig = $_[1]->{import_args};
-            $_[1]->{import_args} = [];
-            %custom_aliases = ();
-            @custom_methods = ();
-
-            if ($perl_version) {
-               require feature;
-               feature->import(":5.$perl_version")
-            }
-
-            strict->import;
-            warnings->import;
-
-            $self->table($self->candy_gentable) if $self->candy_autotable;
-
-            1;
-         }
+         INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods),
       ],
    });
 
@@ -231,6 +214,29 @@ sub set_base {
       @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->candy_base($base));
    }
 }
+
+sub gen_INIT {
+  my ($self, $perl_version, $custom_aliases, $custom_methods) = @_;
+  sub {
+    my $orig = $_[1]->{import_args};
+    $_[1]->{import_args} = [];
+    %$custom_aliases = ();
+    @$custom_methods = ();
+
+    if ($perl_version) {
+       require feature;
+       feature->import(":5.$perl_version")
+    }
+
+    strict->import;
+    warnings->import;
+
+    $self->table($self->candy_gentable) if $self->candy_autotable;
+
+    1;
+  }
+}
+
 1;
 
 =pod
