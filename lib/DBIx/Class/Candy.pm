@@ -458,3 +458,31 @@ examples if that's not clear:
  MyApp::Schema::Result::Cat -> cats
  MyApp::Schema::Result::Software::Buidling -> software_buildings
  MyApp::Schema::Result::LonelyPerson -> lonely_people
+
+Also, if you just want to be different, you can easily set up your own naming
+scheme.  Just add a C<gen_table> method to your candy subclass.  The method
+gets passed the class name and the autotable version, which of course you may
+ignore.  For example, one might just do the following:
+
+ sub gen_table {
+   my ($self, $class) = @_;
+
+   $class =~ s/::/_/g;
+   lc $class;
+ }
+
+Which would tranform C<MyApp::Schema::Result::Foo> into
+C<myapp_schema_result_foo>.
+
+Or maybe instead of using the standard C<MyApp::Schema::Result> namespace you
+decided to be different and do C<MyApp::DB::Table> or something silly like that.
+You could pre-process your class name so that the default C<gen_table> will
+still work:
+
+ sub gen_table {
+   my $self = shift;
+   my $class = $_[0];
+
+   $class =~ s/::DB::Table::/::Schema::Result::/;
+   return $self->next::method(@_);
+ }
