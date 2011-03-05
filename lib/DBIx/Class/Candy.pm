@@ -121,12 +121,8 @@ sub import {
             my $i = $inheritor;
             sub { $i->$name(@_) }
          } } @methods, @custom_methods),
-         (map { $_ => sub {
-            my ($class, $name) = @_;
-            my $meth = $aliases{$name} || $custom_aliases{$name};
-            my $i = $inheritor;
-            sub { $i->$meth(@_) }
-         } } keys %aliases, keys %custom_aliases),
+         (map { $_ => $self->gen_rename_proxy($inheritor, \%aliases, \%custom_aliases) }
+            keys %aliases, keys %custom_aliases),
       ],
       groups  => {
          default => [
@@ -157,6 +153,16 @@ sub import {
    });
 
    goto $import
+}
+
+sub gen_rename_proxy {
+  my ($self, $inheritor, $aliases, $custom_aliases) = @_;
+  sub {
+    my ($class, $name) = @_;
+    my $meth = $aliases->{$name} || $custom_aliases->{$name};
+    my $i = $inheritor;
+    sub { $i->$meth(@_) }
+  }
 }
 
 sub installer {
