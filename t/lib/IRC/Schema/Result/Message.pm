@@ -1,6 +1,6 @@
 package IRC::Schema::Result::Message;
 
-use IRC::Schema::Candy;
+use IRC::Schema::Candy -base => 'DBIx::Class::Core';
 
 table 'Messages';
 

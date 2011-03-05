@@ -37,7 +37,7 @@ my @methods = qw(
    sequence
 );
 
-sub candy_base { return $_[1] }
+sub candy_base { return $_[1] || 'DBIx::Class::Core' }
 
 sub candy_autotable { 0 }
 
@@ -199,7 +199,6 @@ sub installer {
 
 sub set_base {
    my ($self, $inheritor, $base) = @_;
-   $base ||= 'DBIx::Class::Core';
 
    # inlined from parent.pm
    for ( my @useless = $self->candy_base($base) ) {

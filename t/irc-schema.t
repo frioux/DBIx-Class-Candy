@@ -52,7 +52,8 @@ subtest Channel => sub { # {{{
 
 subtest Message => sub { # {{{
    my $result_class = IRC::Schema->resultset('Message')->result_class;
-   isa_ok $result_class, 'IRC::Schema::Result';
+   isa_ok $result_class, 'DBIx::Class::Core';
+   ok(!$result_class->isa('IRC::Schema::Result'), 'Not a ::Result');
    cmp_set [$result_class->columns], [qw(id user_id mode_id channel_id value when_said)], 'columns get set correctly';
 
    cmp_deeply $result_class->column_info('id'), {
