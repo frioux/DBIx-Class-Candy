@@ -311,6 +311,8 @@ your needs.
 
 =head1 IMPORT OPTIONS
 
+See L</SETTING DEFAULT IMPORT OPTIONS> for information on setting these schema wide.
+
 =head2 -base
 
  use DBIx::Class::Candy -base => 'MyApp::Schema::Result';
@@ -370,6 +372,23 @@ versions work, this is just nicer.  A list of aliases are as follows:
  primary_key       => 'set_primary_key',
  unique_constraint => 'add_unique_constraint',
  relationship      => 'add_relationship',
+
+=head1 SETTING DEFAULT IMPORT OPTIONS
+
+Eventually you will get tired of writing the following in every single one of
+your results:
+
+ use DBIx::Class::Candy -base => 'MyApp::Schema::Result', -perl5 => v12;
+
+You can set all of these for your whole schema if you define your own C<Candy>
+subclass as follows:
+
+ package MyApp::Schema::Candy;
+
+ use base 'DBIx::Class::Candy';
+
+ sub candy_base { $_[1] || 'MyApp::Schema::Result' }
+ sub candy_perl_version { 12 }
 
 =head1 SECONDARY API
 
