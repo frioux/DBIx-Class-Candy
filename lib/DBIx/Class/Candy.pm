@@ -39,6 +39,8 @@ my @methods = qw(
 
 sub candy_base { return $_[1] || 'DBIx::Class::Core' }
 
+sub candy_perl_version { return $_[1] }
+
 sub candy_autotable { 0 }
 
 sub candy_gentable {
@@ -55,7 +57,7 @@ sub import {
 
    my $inheritor = caller(0);
    my $args         = $self->parse_arguments(\@_);
-   my $perl_version = $args->{perl_version};
+   my $perl_version = $self->candy_perl_version($args->{perl_version});
    my @rest         = @{$args->{rest}};
 
    $self->set_base($inheritor, $args->{base});

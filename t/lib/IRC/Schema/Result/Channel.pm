@@ -21,5 +21,7 @@ column network_id => {
 belongs_to network => 'IRC::Schema::Result::Network', 'network_id';
 unique_constraint [qw( name )];
 
+sub test_perl_version { eval "given (1) { when (1) { return 'station' } }" }
+
 1;
 

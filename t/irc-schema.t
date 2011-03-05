@@ -48,6 +48,8 @@ subtest Channel => sub { # {{{
    }, 'unqiue constraints get set correctly');
 
    is( $result_class->table, 'Channels', 'table gets set correctly');
+
+   is( $result_class->test_perl_version, 'station', 'perl version gets set from base class') if $] >= 5.010;
 }; # }}}
 
 subtest Message => sub { # {{{
