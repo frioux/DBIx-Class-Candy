@@ -7,17 +7,14 @@ primary_column id => {
    is_auto_increment => 1,
 };
 
-column name => {
+unique_column name => {
    data_type => 'varchar',
    size      => 30,
 };
 
-column code => {
+unique_column code => {
    data_type => 'char',
    size      => '1',
 };
-
-unique_constraint [qw( name )];
-unique_constraint [qw( code )];
 
 1;

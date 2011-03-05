@@ -83,13 +83,14 @@ sub import {
       exports => [
          has_column => $self->gen_has_column($inheritor, $set_table),
          primary_column => $self->gen_primary_column($inheritor, $set_table),
+         unique_column => $self->gen_unique_column($inheritor, $set_table),
          (map { $_ => $self->gen_proxy($inheritor, $set_table) } @methods, @custom_methods),
          (map { $_ => $self->gen_rename_proxy($inheritor, $set_table, \%aliases, \%custom_aliases) }
             keys %aliases, keys %custom_aliases),
       ],
       groups  => {
          default => [
-            'has_column', 'primary_column', @methods, @custom_methods, keys %aliases, keys %custom_aliases
+            qw(has_column primary_column unique_column), @methods, @custom_methods, keys %aliases, keys %custom_aliases
          ],
       },
       installer  => $self->installer($inheritor),
@@ -171,6 +172,20 @@ sub gen_primary_column {
       $set_table->();
       $i->add_columns($column => $info);
       $i->set_primary_key($column);
+    }
+  }
+}
+
+sub gen_unique_column {
+  my ($self, $inheritor, $set_table) = @_;
+  sub {
+    my $i = $inheritor;
+    sub {
+      my $column = shift;
+      my $info   = shift;
+      $set_table->();
+      $i->add_columns($column => $info);
+      $i->add_unique_constraint([ $column ]);
     }
   }
 }
@@ -446,6 +461,15 @@ the primary key in a single call:
  primary_column id => {
    data_type => 'int',
    is_auto_increment => 1,
+ };
+
+=head2 unique_column
+
+This allows you to define a column and set it as unique in a single call:
+
+ unique_column name => {
+   data_type => 'varchar',
+   size => 30,
  };
 
 =head1 AUTOTABLE VERSIONS
