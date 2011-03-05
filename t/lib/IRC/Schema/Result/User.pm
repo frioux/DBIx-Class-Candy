@@ -1,6 +1,6 @@
 package IRC::Schema::Result::User;
 
-use DBIx::Class::Candy -base => 'IRC::Schema::Result';
+use IRC::Schema::Candy;
 
 table 'Users';
 
