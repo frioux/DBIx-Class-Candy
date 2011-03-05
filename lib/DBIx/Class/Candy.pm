@@ -257,11 +257,9 @@ sub gen_INIT {
 
  package MyApp::Schema::Result::Artist;
 
- use DBIx::Class::Candy;
+ use DBIx::Class::Candy -autotable => v1;
 
- table 'artists';
-
- column id => {
+ primary_column id => {
    data_type => 'int',
    is_auto_increment => 1,
  };
@@ -271,8 +269,6 @@ sub gen_INIT {
    size => 25,
    is_nullable => 1,
  };
-
- primary_key 'id';
 
  has_many albums => 'A::Schema::Result::Album', 'artist_id';
 
