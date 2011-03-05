@@ -86,18 +86,7 @@ sub import {
       }
    }
 
-   # inlined from parent.pm
-   for ( my @useless = $self->candy_base($base) ) {
-      s{::|'}{/}g;
-      require "$_.pm"; # dies if the file is not found
-   }
-
-   {
-      no strict 'refs';
-      # This is more efficient than push for the new MRO
-      # at least until the new MRO is fixed
-      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->candy_base($base));
-   }
+   $self->set_base($inheritor, $base);
    $inheritor->load_components(@{$components});
    for (@{mro::get_linear_isa($inheritor)}) {
       if (my $hashref = $DBIx::Class::Candy::Exports::aliases{$_}) {
@@ -178,6 +167,23 @@ sub installer {
   }
 }
 
+sub set_base {
+   my ($self, $inheritor, $base) = @_;
+   $base ||= 'DBIx::Class::Core';
+
+   # inlined from parent.pm
+   for ( my @useless = $self->candy_base($base) ) {
+      s{::|'}{/}g;
+      require "$_.pm"; # dies if the file is not found
+   }
+
+   {
+      no strict 'refs';
+      # This is more efficient than push for the new MRO
+      # at least until the new MRO is fixed
+      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->candy_base($base));
+   }
+}
 1;
 
 =pod
