@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Allow Candy to automatically set table name
   - Allow Candy subclass to define default base and default perl version
   - Add missing docs for primary_column sugar
 

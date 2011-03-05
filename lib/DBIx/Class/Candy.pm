@@ -331,6 +331,14 @@ See L</SETTING DEFAULT IMPORT OPTIONS> for information on setting these schema w
 The first thing you can do to customize your usage of C<DBIx::Class::Candy>
 is change the parent class.  Do that by using the C<-base> import option.
 
+=head2 -autotable
+
+ use DBIx::Class::Candy -autotable => v1;
+
+Don't waste your precious keystrokes typing C<< table 'buildings' >>, let
+C<DBIx::Class::Candy> do that for you!  See L<AUTOTABLE VERSIONS> for what the
+existing versions will generate for you.
+
 =head2 -components
 
  use DBIx::Class::Candy -components => ['FilterColumn'];
@@ -389,7 +397,10 @@ versions work, this is just nicer.  A list of aliases are as follows:
 Eventually you will get tired of writing the following in every single one of
 your results:
 
- use DBIx::Class::Candy -base => 'MyApp::Schema::Result', -perl5 => v12;
+ use DBIx::Class::Candy
+   -base      => 'MyApp::Schema::Result',
+   -perl5     => v12,
+   -autotable => v1;
 
 You can set all of these for your whole schema if you define your own C<Candy>
 subclass as follows:
@@ -400,6 +411,18 @@ subclass as follows:
 
  sub candy_base { $_[1] || 'MyApp::Schema::Result' }
  sub candy_perl_version { 12 }
+ sub candy_autotable { 1 }
+
+Note the C<< $_[1] || >> in C<candy_base>.  All of these methods are passed the
+values passed in from the arguments to the subclass, so you can either throw
+them away, honor them, die on usage, or whatever.  To be clear, if you define
+your subclass, and someone uses it as follows:
+
+ use MyApp::Schema::Candy -base => 'Moose', -perl5 => v30, -autotable => v3;
+
+Your C<candy_base> method will get C<Moose>, your
+C<candy_perl_version> will get C<30>, and your C<candy_autotable> will get
+C<3>.
 
 =head1 SECONDARY API
 
@@ -426,3 +449,14 @@ the primary key in a single call:
    data_type => 'int',
    is_auto_increment => 1,
  };
+
+=head1 AUTOTABLE VERSIONS
+
+Currently there is a single version, C<v1>, which looks at your class name,
+grabs everything after C<::Schema::Result::>, removes the C<::>'s, converts it
+to underscores instead of camel-case, and pluralizes it.  Here are some
+examples if that's not clear:
+
+ MyApp::Schema::Result::Cat -> cats
+ MyApp::Schema::Result::Software::Buidling -> software_buildings
+ MyApp::Schema::Result::LonelyPerson -> lonely_people
