@@ -101,15 +101,7 @@ sub import {
    my $import = build_exporter({
       exports => [
          has_column => $self->gen_has_column($inheritor),
-         primary_column => sub {
-            my $i = $inheritor;
-            sub {
-               my $column = shift;
-               my $info   = shift;
-               $i->add_columns($column => $info);
-               $i->set_primary_key($column);
-            }
-         },
+         primary_column => $self->gen_primary_column($inheritor),
          (map { $_ => $self->gen_proxy($inheritor) } @methods, @custom_methods),
          (map { $_ => $self->gen_rename_proxy($inheritor, \%aliases, \%custom_aliases) }
             keys %aliases, keys %custom_aliases),
@@ -143,6 +135,19 @@ sub import {
    });
 
    goto $import
+}
+
+sub gen_primary_column {
+  my ($self, $inheritor) = @_;
+  sub {
+    my $i = $inheritor;
+    sub {
+      my $column = shift;
+      my $info   = shift;
+      $i->add_columns($column => $info);
+      $i->set_primary_key($column);
+    }
+  }
 }
 
 sub gen_has_column {
