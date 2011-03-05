@@ -214,11 +214,11 @@ subtest User => sub { # {{{
    cmp_deeply([$result_class->primary_columns], [ 'id' ], 'id gets set to pk');
 
    cmp_deeply({ $result_class->unique_constraints }, {
-     Users_handle => [ 'handle' ],
+     users_handle => [ 'handle' ],
      primary => [ 'id' ],
    }, 'unqiue constraints get set correctly');
 
-   is( $result_class->table, 'Users', 'table gets set correctly');
+   is( $result_class->table, 'users', 'table gets set correctly');
 }; # }}}
 
 

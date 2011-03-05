@@ -41,7 +41,7 @@ sub candy_base { return $_[1] || 'DBIx::Class::Core' }
 
 sub candy_perl_version { return $_[1] }
 
-sub candy_autotable { 0 }
+sub candy_autotable { $_[1] }
 
 sub candy_gentable {
    my ( $self, $class ) = @_;
@@ -72,7 +72,7 @@ sub import {
    }
 
    my $set_table = sub {};
-   if ($self->candy_autotable eq 'v1') {
+   if ($self->candy_autotable($args->{autotable}) eq 'v1') {
      my $table_name = $self->candy_gentable($inheritor);
      $set_table = sub { $inheritor->table($table_name); $set_table = sub {} }
    }
@@ -123,6 +123,7 @@ sub parse_arguments {
   my @rest;
   my $perl_version = undef;
   my $components   = [];
+  my $autotable = '';
   for my $idx ( 0 .. $#args ) {
     my $val = $args[$idx];
 
@@ -134,6 +135,9 @@ sub parse_arguments {
 
     if ( $val eq '-base' ) {
       $base = $args[$idx + 1];
+      $skipnext = 1;
+    } elsif ( $val eq '-autotable' ) {
+      $autotable = $args[$idx + 1];
       $skipnext = 1;
     } elsif ( $val eq '-perl5' ) {
       $perl_version = ord $args[$idx + 1];
@@ -147,6 +151,7 @@ sub parse_arguments {
   }
 
   return {
+    autotable    => $autotable,
     base         => $base,
     perl_version => $perl_version,
     components   => $components,
