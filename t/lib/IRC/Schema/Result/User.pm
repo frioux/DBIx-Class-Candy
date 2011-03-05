@@ -1,6 +1,6 @@
 package IRC::Schema::Result::User;
 
-use DBIx::Class::Candy -autotable => 'v1', -base => 'IRC::Schema::Result';
+use DBIx::Class::Candy -autotable => v1, -base => 'IRC::Schema::Result';
 
 column id => {
    data_type => 'int',

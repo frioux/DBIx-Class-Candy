@@ -72,7 +72,7 @@ sub import {
    }
 
    my $set_table = sub {};
-   if ($self->candy_autotable($args->{autotable}) eq 'v1') {
+   if ($self->candy_autotable($args->{autotable}) == 1) {
      my $table_name = $self->candy_gentable($inheritor);
      $set_table = sub { $inheritor->table($table_name); $set_table = sub {} }
    }
@@ -123,7 +123,7 @@ sub parse_arguments {
   my @rest;
   my $perl_version = undef;
   my $components   = [];
-  my $autotable = '';
+  my $autotable = 0;
   for my $idx ( 0 .. $#args ) {
     my $val = $args[$idx];
 
@@ -137,7 +137,7 @@ sub parse_arguments {
       $base = $args[$idx + 1];
       $skipnext = 1;
     } elsif ( $val eq '-autotable' ) {
-      $autotable = $args[$idx + 1];
+      $autotable = ord $args[$idx + 1];
       $skipnext = 1;
     } elsif ( $val eq '-perl5' ) {
       $perl_version = ord $args[$idx + 1];
