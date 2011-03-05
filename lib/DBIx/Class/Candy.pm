@@ -37,20 +37,22 @@ my @methods = qw(
    sequence
 );
 
-sub candy_base { return $_[1] || 'DBIx::Class::Core' }
+sub base { return $_[1] || 'DBIx::Class::Core' }
 
-sub candy_perl_version { return $_[1] }
+sub perl_version { return $_[1] }
 
-sub candy_autotable { $_[1] }
+sub autotable { $_[1] }
 
-sub candy_gentable {
-   my ( $self, $class ) = @_;
-   $class =~ /::Schema::Result::(.+)$/;
-   my $part = $1;
-   $part =~ s/:://g;
-   $part = String::CamelCase::decamelize($part);
-   join q{_}, split /\s+/,
-      Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
+sub gen_table {
+   my ( $self, $class, $version ) = @_;
+   if ($version == 1) {
+      $class =~ /::Schema::Result::(.+)$/;
+      my $part = $1;
+      $part =~ s/:://g;
+      $part = String::CamelCase::decamelize($part);
+      return join q{_}, split /\s+/,
+         Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
+   }
 }
 
 sub import {
@@ -58,7 +60,7 @@ sub import {
 
    my $inheritor = caller(0);
    my $args         = $self->parse_arguments(\@_);
-   my $perl_version = $self->candy_perl_version($args->{perl_version});
+   my $perl_version = $self->perl_version($args->{perl_version});
    my @rest         = @{$args->{rest}};
 
    $self->set_base($inheritor, $args->{base});
@@ -72,8 +74,8 @@ sub import {
    }
 
    my $set_table = sub {};
-   if ($self->candy_autotable($args->{autotable}) == 1) {
-     my $table_name = $self->candy_gentable($inheritor);
+   if (my $v = $self->autotable($args->{autotable})) {
+     my $table_name = $self->gen_table($inheritor, $v);
      $set_table = sub { $inheritor->table($table_name); $set_table = sub {} }
    }
    @_ = ($self, @rest);
@@ -216,7 +218,7 @@ sub set_base {
    my ($self, $inheritor, $base) = @_;
 
    # inlined from parent.pm
-   for ( my @useless = $self->candy_base($base) ) {
+   for ( my @useless = $self->base($base) ) {
       s{::|'}{/}g;
       require "$_.pm"; # dies if the file is not found
    }
@@ -225,7 +227,7 @@ sub set_base {
       no strict 'refs';
       # This is more efficient than push for the new MRO
       # at least until the new MRO is fixed
-      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->candy_base($base));
+      @{"$inheritor\::ISA"} = (@{"$inheritor\::ISA"} , $self->base($base));
    }
 }
 
@@ -405,19 +407,19 @@ subclass as follows:
 
  use base 'DBIx::Class::Candy';
 
- sub candy_base { $_[1] || 'MyApp::Schema::Result' }
- sub candy_perl_version { 12 }
- sub candy_autotable { 1 }
+ sub base { $_[1] || 'MyApp::Schema::Result' }
+ sub perl_version { 12 }
+ sub autotable { 1 }
 
-Note the C<< $_[1] || >> in C<candy_base>.  All of these methods are passed the
+Note the C<< $_[1] || >> in C<base>.  All of these methods are passed the
 values passed in from the arguments to the subclass, so you can either throw
 them away, honor them, die on usage, or whatever.  To be clear, if you define
 your subclass, and someone uses it as follows:
 
  use MyApp::Schema::Candy -base => 'Moose', -perl5 => v30, -autotable => v3;
 
-Your C<candy_base> method will get C<Moose>, your
-C<candy_perl_version> will get C<30>, and your C<candy_autotable> will get
+Your C<base> method will get C<Moose>, your
+C<perl_version> will get C<30>, and your C<autotable> will get
 C<3>.
 
 =head1 SECONDARY API

@@ -7,11 +7,11 @@ use parent 'DBIx::Class::Core';
 
 __PACKAGE__->load_components('Candy');
 
-sub candy_base() { $_[1] || 'IRC::Schema::Result' }
+sub base() { $_[1] || 'IRC::Schema::Result' }
 
-sub candy_perl_version() { return 10 if $] >= 5.010 }
-sub candy_autotable() { 1 }
-sub candy_gentable {
+sub perl_version() { return 10 if $] >= 5.010 }
+sub autotable() { 1 }
+sub gen_table {
    my $self = shift;
    my $ret  = $self->next::method(@_);
 
