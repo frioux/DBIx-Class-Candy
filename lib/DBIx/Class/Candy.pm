@@ -100,13 +100,7 @@ sub import {
    @_ = ($self, @rest);
    my $import = build_exporter({
       exports => [
-         has_column => sub {
-            my $i = $inheritor;
-            sub {
-               my $column = shift;
-               $i->add_columns($column => { @_ })
-            }
-         },
+         has_column => $self->gen_has_column($inheritor),
          primary_column => sub {
             my $i = $inheritor;
             sub {
@@ -149,6 +143,17 @@ sub import {
    });
 
    goto $import
+}
+
+sub gen_has_column {
+  my ($self, $inheritor) = @_;
+  sub {
+    my $i = $inheritor;
+    sub {
+      my $column = shift;
+      $i->add_columns($column => { @_ })
+    }
+  }
 }
 
 sub gen_rename_proxy {
