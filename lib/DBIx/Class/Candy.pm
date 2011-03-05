@@ -57,8 +57,6 @@ sub import {
    my $perl_version = undef;
    my $components = [];
 
-   my @custom_methods;
-   my %custom_aliases;
    my @rest;
 
    my $inheritor = caller(0);
@@ -88,13 +86,12 @@ sub import {
 
    $self->set_base($inheritor, $base);
    $inheritor->load_components(@{$components});
-   for (@{mro::get_linear_isa($inheritor)}) {
-      if (my $hashref = $DBIx::Class::Candy::Exports::aliases{$_}) {
-         %custom_aliases = (%custom_aliases, %{$hashref})
-      }
-      if (my $arrayref = $DBIx::Class::Candy::Exports::methods{$_}) {
-         @custom_methods = (@custom_methods, @{$arrayref})
-      }
+   my @custom_methods;
+   my %custom_aliases;
+   {
+      my @custom = $self->gen_custom_imports($inheritor);
+      @custom_methods = @{$custom[0]};
+      %custom_aliases = %{$custom[1]};
    }
 
    @_ = ($self, @rest);
@@ -135,6 +132,21 @@ sub import {
    });
 
    goto $import
+}
+
+sub gen_custom_imports {
+  my ($self, $inheritor) = @_;
+  my @methods;
+  my %aliases;
+  for (@{mro::get_linear_isa($inheritor)}) {
+    if (my $a = $DBIx::Class::Candy::Exports::aliases{$_}) {
+      %aliases = (%aliases, %$a)
+    }
+    if (my $m = $DBIx::Class::Candy::Exports::methods{$_}) {
+      @methods = (@methods, @$m)
+    }
+  }
+  return(\@methods, \%aliases)
 }
 
 sub gen_primary_column {
