@@ -2,8 +2,6 @@ package IRC::Schema::Result::Channel;
 
 use IRC::Schema::Candy;
 
-table 'Channels';
-
 primary_column id => {
    data_type => 'int',
    is_auto_increment => 1,

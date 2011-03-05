@@ -44,8 +44,9 @@ sub candy_perl_version { return $_[1] }
 sub candy_autotable { 0 }
 
 sub candy_gentable {
-   my $class = $_[0];
-   my $part = $class =~ /::Schema::Resultset::(.+)$/;
+   my ( $self, $class ) = @_;
+   $class =~ /::Schema::Result::(.+)$/;
+   my $part = $1;
    $part =~ s/:://g;
    $part = String::CamelCase::decamelize($part);
    join q{_}, split /\s+/,
@@ -70,13 +71,18 @@ sub import {
       %custom_aliases = %{$custom[1]};
    }
 
+   my $set_table = sub {};
+   if ($self->candy_autotable eq 'v1') {
+     my $table_name = $self->candy_gentable($inheritor);
+     $set_table = sub { $inheritor->table($table_name); $set_table = sub {} }
+   }
    @_ = ($self, @rest);
    my $import = build_exporter({
       exports => [
-         has_column => $self->gen_has_column($inheritor),
-         primary_column => $self->gen_primary_column($inheritor),
-         (map { $_ => $self->gen_proxy($inheritor) } @methods, @custom_methods),
-         (map { $_ => $self->gen_rename_proxy($inheritor, \%aliases, \%custom_aliases) }
+         has_column => $self->gen_has_column($inheritor, $set_table),
+         primary_column => $self->gen_primary_column($inheritor, $set_table),
+         (map { $_ => $self->gen_proxy($inheritor, $set_table) } @methods, @custom_methods),
+         (map { $_ => $self->gen_rename_proxy($inheritor, $set_table, \%aliases, \%custom_aliases) }
             keys %aliases, keys %custom_aliases),
       ],
       groups  => {
@@ -86,7 +92,7 @@ sub import {
       },
       installer  => $self->installer($inheritor),
       collectors => [
-         INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods),
+         INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods, $inheritor),
       ],
    });
 
@@ -149,12 +155,13 @@ sub parse_arguments {
 }
 
 sub gen_primary_column {
-  my ($self, $inheritor) = @_;
+  my ($self, $inheritor, $set_table) = @_;
   sub {
     my $i = $inheritor;
     sub {
       my $column = shift;
       my $info   = shift;
+      $set_table->();
       $i->add_columns($column => $info);
       $i->set_primary_key($column);
     }
@@ -162,32 +169,33 @@ sub gen_primary_column {
 }
 
 sub gen_has_column {
-  my ($self, $inheritor) = @_;
+  my ($self, $inheritor, $set_table) = @_;
   sub {
     my $i = $inheritor;
     sub {
       my $column = shift;
+      $set_table->();
       $i->add_columns($column => { @_ })
     }
   }
 }
 
 sub gen_rename_proxy {
-  my ($self, $inheritor, $aliases, $custom_aliases) = @_;
+  my ($self, $inheritor, $set_table, $aliases, $custom_aliases) = @_;
   sub {
     my ($class, $name) = @_;
     my $meth = $aliases->{$name} || $custom_aliases->{$name};
     my $i = $inheritor;
-    sub { $i->$meth(@_) }
+    sub { $set_table->(); $i->$meth(@_) }
   }
 }
 
 sub gen_proxy {
-  my ($self, $inheritor) = @_;
+  my ($self, $inheritor, $set_table) = @_;
   sub {
     my ($class, $name) = @_;
     my $i = $inheritor;
-    sub { $i->$name(@_) }
+    sub { $set_table->(); $i->$name(@_) }
   }
 }
 
@@ -217,7 +225,7 @@ sub set_base {
 }
 
 sub gen_INIT {
-  my ($self, $perl_version, $custom_aliases, $custom_methods) = @_;
+  my ($self, $perl_version, $custom_aliases, $custom_methods, $inheritor) = @_;
   sub {
     my $orig = $_[1]->{import_args};
     $_[1]->{import_args} = [];
@@ -231,8 +239,6 @@ sub gen_INIT {
 
     strict->import;
     warnings->import;
-
-    $self->table($self->candy_gentable) if $self->candy_autotable;
 
     1;
   }

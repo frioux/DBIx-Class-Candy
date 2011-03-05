@@ -2,8 +2,6 @@ package IRC::Schema::Result::Mode;
 
 use IRC::Schema::Candy;
 
-table 'Modes';
-
 primary_column id => {
    data_type         => 'int',
    is_auto_increment => 1,

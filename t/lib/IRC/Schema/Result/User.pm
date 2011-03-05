@@ -2,8 +2,6 @@ package IRC::Schema::Result::User;
 
 use IRC::Schema::Candy;
 
-table 'Users';
-
 column id => {
    data_type => 'int',
    is_auto_increment => 1,

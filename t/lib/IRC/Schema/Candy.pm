@@ -1,11 +1,6 @@
-package IRC::Schema::Result;
+package IRC::Schema::Candy;
 
-use strict;
-use warnings;
-
-use parent 'DBIx::Class::Core';
-
-__PACKAGE__->load_components('Candy');
+use base 'DBIx::Class::Candy';
 
 sub candy_base() { $_[1] || 'IRC::Schema::Result' }
 
@@ -17,4 +12,5 @@ sub candy_gentable {
 
    ucfirst $ret
 }
+
 1;

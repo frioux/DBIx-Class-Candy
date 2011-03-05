@@ -1,8 +1,6 @@
 package IRC::Schema::Result::Network;
 
-use DBIx::Class::Candy -base => 'IRC::Schema::Result';
-
-table 'Networks';
+use IRC::Schema::Result;
 
 primary_column id => {
    data_type => 'int',
