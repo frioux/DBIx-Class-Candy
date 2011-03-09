@@ -23,21 +23,7 @@ subtest Channel => sub { # {{{
      data_type => 'int',
    }, 'network_id metadata set';
 
-   cmp_deeply $result_class->relationship_info('network'), {
-     attrs => {
-       accessor => "single",
-       fk_columns => {
-         network_id => 1
-       },
-       is_foreign_key_constraint => 1,
-       undef_on_null_fk => 1
-     },
-     class => "IRC::Schema::Result::Network",
-     cond => {
-       "foreign.id" => "self.network_id"
-     },
-     source => "IRC::Schema::Result::Network"
-   }, 'network relationship works';
+   ok $result_class->has_relationship('network'), 'network relationship works';
 
    cmp_deeply([$result_class->primary_columns], [ 'id' ], 'id gets set to pk');
 
@@ -78,51 +64,9 @@ subtest Message => sub { # {{{
      data_type => 'datetime',
    }, 'when_said metadata set';
 
-   cmp_deeply $result_class->relationship_info('user'), {
-     attrs => {
-       accessor => "single",
-       fk_columns => {
-         user_id => 1
-       },
-       is_foreign_key_constraint => 1,
-       undef_on_null_fk => 1
-     },
-     class => "IRC::Schema::Result::User",
-     cond => {
-       "foreign.id" => "self.user_id"
-     },
-     source => "IRC::Schema::Result::User"
-   }, 'user relationship works';
-   cmp_deeply $result_class->relationship_info('channel'), {
-     attrs => {
-       accessor => "single",
-       fk_columns => {
-         channel_id => 1
-       },
-       is_foreign_key_constraint => 1,
-       undef_on_null_fk => 1
-     },
-     class => "IRC::Schema::Result::Channel",
-     cond => {
-       "foreign.id" => "self.channel_id"
-     },
-     source => "IRC::Schema::Result::Channel"
-   }, 'channel relationship works';
-   cmp_deeply $result_class->relationship_info('mode'), {
-     attrs => {
-       accessor => "single",
-       fk_columns => {
-         mode_id => 1
-       },
-       is_foreign_key_constraint => 1,
-       undef_on_null_fk => 1
-     },
-     class => "IRC::Schema::Result::Mode",
-     cond => {
-       "foreign.id" => "self.mode_id"
-     },
-     source => "IRC::Schema::Result::Mode"
-   }, 'mode relationship works';
+   ok $result_class->has_relationship('user'), 'user relationship works';
+   ok $result_class->has_relationship('channel'), 'channel relationship works';
+   ok $result_class->has_relationship('mode'), 'mode relationship works';
 
    cmp_deeply([$result_class->primary_columns], [ 'id' ], 'id gets set to pk');
 
@@ -196,19 +140,7 @@ subtest User => sub { # {{{
      size => 30,
    }, 'handle metadata set';
 
-   cmp_deeply $result_class->relationship_info('messages'), {
-     attrs => {
-       accessor => "multi",
-       cascade_copy => 1,
-       cascade_delete => 1,
-       join_type => "LEFT"
-     },
-     class => "IRC::Schema::Result::Message",
-     cond => {
-       "foreign.user_id" => "self.id"
-     },
-     source => "IRC::Schema::Result::Message"
-   }, 'messages relationship works';
+   ok $result_class->has_relationship('messages'), 'messages relationship works';
 
    cmp_deeply([$result_class->primary_columns], [ 'id' ], 'id gets set to pk');
 
