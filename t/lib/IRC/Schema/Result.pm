@@ -3,7 +3,7 @@ package IRC::Schema::Result;
 use strict;
 use warnings;
 
-use parent 'DBIx::Class::Core';
+use base 'DBIx::Class::Core';
 
 __PACKAGE__->load_components('Candy');
 
