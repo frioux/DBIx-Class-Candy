@@ -6,7 +6,6 @@ use Test::Deep;
 use lib 't/lib';
 use IRC::Schema;
 
-use Devel::Dwarn;
 subtest Channel => sub { # {{{
    my $result_class = IRC::Schema->resultset('Channel')->result_class;
    isa_ok $result_class, 'IRC::Schema::Result';
