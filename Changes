@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - autotable v1 now dies on unrecognized naming scheme
+  - autotable v1 works with simply ::Result:: and not just ::Schema::Result::
 
 0.002000  2011-03-09 12:03:50 CST6CDT
   - Add unique_column sugar
