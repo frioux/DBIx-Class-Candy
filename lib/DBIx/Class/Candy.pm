@@ -8,6 +8,7 @@ use MRO::Compat;
 use Sub::Exporter 'build_exporter';
 use Lingua::EN::Inflect ();
 use String::CamelCase ();
+use Carp 'croak';
 
 # ABSTRACT: Sugar for your favorite ORM, DBIx::Class
 
@@ -52,7 +53,7 @@ sub gen_table {
          return join q{_}, split /\s+/,
             Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
       } else {
-         die 'unrecognized naming scheme!'
+         croak 'unrecognized naming scheme!'
       }
    }
 }
