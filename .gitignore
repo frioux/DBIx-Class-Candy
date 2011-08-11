@@ -1,3 +1,4 @@
 *.swp
 *.tar.gz
 DBIx-Class-Candy-*
+.build
