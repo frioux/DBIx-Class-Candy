@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002001  2011-08-10 20:03:18 CST6CDT
   - autotable v1 now dies on unrecognized naming scheme
   - autotable v1 works with simply ::Result:: and not just ::Schema::Result::
 
