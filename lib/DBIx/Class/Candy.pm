@@ -79,7 +79,7 @@ sub import {
    my $set_table = sub {};
    if (my $v = $self->autotable($args->{autotable})) {
      my $table_name = $self->gen_table($inheritor, $v);
-     $set_table = sub { $inheritor->table($table_name); $set_table = sub {} }
+     $inheritor->table($table_name);
    }
    @_ = ($self, @rest);
    my $import = build_exporter({
