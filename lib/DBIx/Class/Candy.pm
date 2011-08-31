@@ -76,7 +76,6 @@ sub import {
       %custom_aliases = %{$custom[1]};
    }
 
-   my $set_table = sub {};
    if (my $v = $self->autotable($args->{autotable})) {
      my $table_name = $self->gen_table($inheritor, $v);
      $inheritor->table($table_name);
@@ -84,11 +83,11 @@ sub import {
    @_ = ($self, @rest);
    my $import = build_exporter({
       exports => [
-         has_column => $self->gen_has_column($inheritor, $set_table),
-         primary_column => $self->gen_primary_column($inheritor, $set_table),
-         unique_column => $self->gen_unique_column($inheritor, $set_table),
-         (map { $_ => $self->gen_proxy($inheritor, $set_table) } @methods, @custom_methods),
-         (map { $_ => $self->gen_rename_proxy($inheritor, $set_table, \%aliases, \%custom_aliases) }
+         has_column => $self->gen_has_column($inheritor),
+         primary_column => $self->gen_primary_column($inheritor),
+         unique_column => $self->gen_unique_column($inheritor),
+         (map { $_ => $self->gen_proxy($inheritor) } @methods, @custom_methods),
+         (map { $_ => $self->gen_rename_proxy($inheritor, \%aliases, \%custom_aliases) }
             keys %aliases, keys %custom_aliases),
       ],
       groups  => {
@@ -166,13 +165,12 @@ sub parse_arguments {
 }
 
 sub gen_primary_column {
-  my ($self, $inheritor, $set_table) = @_;
+  my ($self, $inheritor) = @_;
   sub {
     my $i = $inheritor;
     sub {
       my $column = shift;
       my $info   = shift;
-      $set_table->();
       $i->add_columns($column => $info);
       $i->set_primary_key($column);
     }
@@ -180,13 +178,12 @@ sub gen_primary_column {
 }
 
 sub gen_unique_column {
-  my ($self, $inheritor, $set_table) = @_;
+  my ($self, $inheritor) = @_;
   sub {
     my $i = $inheritor;
     sub {
       my $column = shift;
       my $info   = shift;
-      $set_table->();
       $i->add_columns($column => $info);
       $i->add_unique_constraint([ $column ]);
     }
@@ -194,33 +191,32 @@ sub gen_unique_column {
 }
 
 sub gen_has_column {
-  my ($self, $inheritor, $set_table) = @_;
+  my ($self, $inheritor) = @_;
   sub {
     my $i = $inheritor;
     sub {
       my $column = shift;
-      $set_table->();
       $i->add_columns($column => { @_ })
     }
   }
 }
 
 sub gen_rename_proxy {
-  my ($self, $inheritor, $set_table, $aliases, $custom_aliases) = @_;
+  my ($self, $inheritor, $aliases, $custom_aliases) = @_;
   sub {
     my ($class, $name) = @_;
     my $meth = $aliases->{$name} || $custom_aliases->{$name};
     my $i = $inheritor;
-    sub { $set_table->(); $i->$meth(@_) }
+    sub { $i->$meth(@_) }
   }
 }
 
 sub gen_proxy {
-  my ($self, $inheritor, $set_table) = @_;
+  my ($self, $inheritor) = @_;
   sub {
     my ($class, $name) = @_;
     my $i = $inheritor;
-    sub { $set_table->(); $i->$name(@_) }
+    sub { $i->$name(@_) }
   }
 }
 
