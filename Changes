@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - primary_column may be called multiple times to define a multicolumn pk
 
 0.002001  2011-08-10 20:03:18 CST6CDT
   - autotable v1 now dies on unrecognized naming scheme

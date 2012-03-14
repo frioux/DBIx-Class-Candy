@@ -174,7 +174,7 @@ sub gen_primary_column {
       my $info   = shift;
       $set_table->();
       $i->add_columns($column => $info);
-      $i->set_primary_key($column);
+      $i->set_primary_key($i->primary_columns, $column);
     }
   }
 }
@@ -465,6 +465,12 @@ the primary key in a single call:
    data_type => 'int',
    is_auto_increment => 1,
  };
+
+If your table has multiple columns in it's primary key, merely call this method
+for each column:
+
+ primary_column person_id => { data_type => 'int' };
+ primary_column friend_id => { data_type => 'int' };
 
 =head2 unique_column
 
