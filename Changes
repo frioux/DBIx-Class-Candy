@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fix repo url
 
 0.002100  2012-03-13 20:31:45 America/Chicago
   - primary_column may be called multiple times to define a multicolumn pk
