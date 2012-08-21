@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - remove VERSION from pod because yuck
   - fix repo url
 
 0.002100  2012-03-13 20:31:45 America/Chicago
