@@ -2,6 +2,9 @@ package DBIx::Class::Candy;
 
 use strict;
 use warnings;
+
+# VERSION
+
 use namespace::clean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
