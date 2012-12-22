@@ -9,8 +9,6 @@ use namespace::clean;
 require DBIx::Class::Candy::Exports;
 use MRO::Compat;
 use Sub::Exporter 'build_exporter';
-use Lingua::EN::Inflect ();
-use String::CamelCase ();
 use Carp 'croak';
 
 # ABSTRACT: Sugar for your favorite ORM, DBIx::Class
@@ -51,6 +49,8 @@ sub gen_table {
    my ( $self, $class, $version ) = @_;
    if ($version == 1) {
       if (my ( $part ) = $class =~ /(?:::Schema)?::Result::(.+)$/) {
+         require Lingua::EN::Inflect;
+         require String::CamelCase;
          $part =~ s/:://g;
          $part = String::CamelCase::decamelize($part);
          return join q{_}, split /\s+/,
