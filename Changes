@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Remove HERE BE DRAGONS warning, this module is totally stable \o/
 
 0.002102  2012-11-17 15:43:18 CST6CDT
   - Put MetaYAML back in dist

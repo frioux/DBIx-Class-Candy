@@ -297,13 +297,6 @@ sub gen_INIT {
 
  1;
 
-=head1 HERE BE DRAGONS
-
-Part of the goal of this module is to fix some warts of the original API
-for defining L<DBIx::Class> results.  Given that we would like to get a few
-eyeballs on it before we finalize it.  If you are writing code that you will
-not touch again for years, do not use this till this warning is removed.
-
 =head1 DESCRIPTION
 
 C<DBIx::Class::Candy> is a simple sugar layer for definition of
