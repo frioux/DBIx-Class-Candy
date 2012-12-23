@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002103  2012-12-23 17:42:36 CST6CDT
   - Lazily load deps for autotable
   - Remove HERE BE DRAGONS warning, this module is totally stable \o/
 
