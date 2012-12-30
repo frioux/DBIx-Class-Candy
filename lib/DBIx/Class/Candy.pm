@@ -462,7 +462,7 @@ the primary key in a single call:
    is_auto_increment => 1,
  };
 
-If your table has multiple columns in it's primary key, merely call this method
+If your table has multiple columns in its primary key, merely call this method
 for each column:
 
  primary_column person_id => { data_type => 'int' };
