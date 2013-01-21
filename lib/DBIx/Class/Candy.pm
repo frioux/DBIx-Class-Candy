@@ -485,7 +485,7 @@ C<::>'s, converts it to underscores instead of camel-case, and pluralizes it.
 Here are some examples if that's not clear:
 
  MyApp::Schema::Result::Cat -> cats
- MyApp::Schema::Result::Software::Buidling -> software_buildings
+ MyApp::Schema::Result::Software::Building -> software_buildings
  MyApp::Schema::Result::LonelyPerson -> lonely_people
  MyApp::DB::Result::FriendlyPerson -> friendly_people
  MyApp::DB::Result::Dog -> dogs
