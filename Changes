@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix stupid doc examples
 
 0.002103  2012-12-23 17:42:36 CST6CDT
   - Lazily load deps for autotable

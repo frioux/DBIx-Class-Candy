@@ -430,11 +430,11 @@ values passed in from the arguments to the subclass, so you can either throw
 them away, honor them, die on usage, or whatever.  To be clear, if you define
 your subclass, and someone uses it as follows:
 
- use MyApp::Schema::Candy -base => 'Moose', -perl5 => v30, -autotable => v3;
+ use MyApp::Schema::Candy -base => 'MyApp::Schema::Result', -perl5 => v18, -autotable => v1;
 
-Your C<base> method will get C<Moose>, your
-C<perl_version> will get C<30>, and your C<autotable> will get
-C<3>.
+Your C<base> method will get C<MyApp::Schema::Result>, your
+C<perl_version> will get C<18>, and your C<autotable> will get
+C<1>.
 
 =head1 SECONDARY API
 
