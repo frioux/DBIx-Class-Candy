@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix warnings in test (thanks for the report Zefram!) (Fixes RT#91976)
 
 0.002104  2013-05-13 09:29:37 CST6CDT
   - Fix stupid doc examples
