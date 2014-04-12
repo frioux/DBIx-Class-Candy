@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002105  2014-04-12 08:51:04-05:00 America/Chicago
   - Fix warnings in test (thanks for the report Zefram!) (Fixes RT#91976)
 
 0.002104  2013-05-13 09:29:37 CST6CDT
