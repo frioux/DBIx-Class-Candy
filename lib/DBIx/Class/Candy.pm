@@ -100,7 +100,7 @@ sub import {
             qw(has_column primary_column unique_column), @methods, @custom_methods, keys %aliases, keys %custom_aliases
          ],
       },
-      installer  => $self->installer($inheritor),
+      installer  => $self->installer,
       collectors => [
          INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods, $inheritor),
       ],
@@ -229,10 +229,10 @@ sub gen_proxy {
 }
 
 sub installer {
-  my ($self, $inheritor) = @_;
+  my ($self) = @_;
   sub {
     Sub::Exporter::default_installer @_;
-    namespace::clean->import( -cleanee => $inheritor )
+    namespace::clean->import( -cleanee => $_[0]{into} )
   }
 }
 
