@@ -232,7 +232,8 @@ sub installer {
   my ($self) = @_;
   sub {
     Sub::Exporter::default_installer @_;
-    namespace::clean->import( -cleanee => $_[0]{into} )
+    my %subs = @{ $_[1] };
+    namespace::clean->import( -cleanee => $_[0]{into}, keys %subs )
   }
 }
 

@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix bug causing infinite recursion when you redefine a package (Thanks
+    Graham Knop for fix, and Wes Malone for bug report!)
   - Simplify sub installer by using Sub::Exporter more correctly (Thanks RJBS!)
   - Stop calling ->table many times per ResultClass (Good catch RJBS!)
 
