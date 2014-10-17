@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.002106  2014-10-17 15:26:43-05:00 America/Chicago
   - Fix bug causing infinite recursion when you redefine a package (Thanks
     Graham Knop for fix, and Wes Malone for bug report!)
   - Simplify sub installer by using Sub::Exporter more correctly (Thanks RJBS!)
