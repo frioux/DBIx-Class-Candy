@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Stop calling ->table many times per ResultClass (Good catch RJBS!)
 
 0.002105  2014-04-12 08:51:04-05:00 America/Chicago
   - Fix warnings in test (thanks for the report Zefram!) (Fixes RT#91976)
