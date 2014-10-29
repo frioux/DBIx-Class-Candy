@@ -92,7 +92,7 @@ sub import {
          primary_column => $self->gen_primary_column($inheritor, $set_table),
          unique_column => $self->gen_unique_column($inheritor, $set_table),
          (map { $_ => $self->gen_proxy($inheritor, $set_table) } @methods, @custom_methods),
-         (map { $_ => $self->gen_rename_proxy($inheritor, $set_table, \%aliases, \%custom_aliases) }
+         (map { $_ => $self->gen_rename_proxy($inheritor, $set_table, %aliases, %custom_aliases) }
             keys %aliases, keys %custom_aliases),
       ],
       groups  => {
@@ -210,10 +210,10 @@ sub gen_has_column {
 }
 
 sub gen_rename_proxy {
-  my ($self, $inheritor, $set_table, $aliases, $custom_aliases) = @_;
+  my ($self, $inheritor, $set_table, %aliases) = @_;
   sub {
     my ($class, $name) = @_;
-    my $meth = $aliases->{$name} || $custom_aliases->{$name};
+    my $meth = $aliases{$name};
     my $i = $inheritor;
     sub { $set_table->(); $i->$meth(@_) }
   }
