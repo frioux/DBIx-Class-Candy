@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix `export_method_aliases` (Thanks Denis Ibaev! See GH#7)
 
 0.002106  2014-10-17 15:26:43-05:00 America/Chicago
   - Fix bug causing infinite recursion when you redefine a package (Thanks
