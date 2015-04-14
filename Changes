@@ -2,6 +2,8 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.003000  2015-04-14 12:25:12-05:00 America/Chicago
+
 0.002107  2014-10-30 19:53:58-05:00 America/Chicago
   - Fix `export_method_aliases` (Thanks Denis Ibaev! See GH#7)
 
