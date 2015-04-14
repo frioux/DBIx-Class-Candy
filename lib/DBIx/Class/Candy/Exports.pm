@@ -5,8 +5,6 @@ package DBIx::Class::Candy::Exports;
 use strict;
 use warnings;
 
-# VERSION
-
 our %methods;
 our %aliases;
 

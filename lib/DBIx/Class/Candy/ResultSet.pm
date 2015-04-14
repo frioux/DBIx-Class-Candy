@@ -3,8 +3,6 @@ package DBIx::Class::Candy::ResultSet;
 use strict;
 use warnings;
 
-# VERSION
-
 use MRO::Compat;
 use Sub::Exporter 'build_exporter';
 use Carp 'croak';
