@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.003001  2015-04-14 13:01:19-05:00 America/Chicago
   - Fix Changes (frew--)
 
 0.003000  2015-04-14 12:25:12-05:00 America/Chicago
