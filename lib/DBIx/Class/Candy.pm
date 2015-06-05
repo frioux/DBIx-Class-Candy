@@ -43,6 +43,8 @@ sub perl_version { return $_[1] }
 
 sub autotable { $_[1] }
 
+sub experimental { $_[1] }
+
 sub gen_table {
    my ( $self, $class, $version ) = @_;
    if ($version == 1) {
@@ -65,6 +67,7 @@ sub import {
    my $inheritor = caller(0);
    my $args         = $self->parse_arguments(\@_);
    my $perl_version = $self->perl_version($args->{perl_version});
+   my $experimental = $self->experimental($args->{experimental});
    my @rest         = @{$args->{rest}};
 
    $self->set_base($inheritor, $args->{base});
@@ -100,7 +103,7 @@ sub import {
       },
       installer  => $self->installer,
       collectors => [
-         INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods, $inheritor),
+         INIT => $self->gen_INIT($perl_version, \%custom_aliases, \@custom_methods, $inheritor, $experimental),
       ],
    });
 
@@ -132,6 +135,8 @@ sub parse_arguments {
   my $perl_version = undef;
   my $components   = [];
   my $autotable = 0;
+  my $experimental;
+
   for my $idx ( 0 .. $#args ) {
     my $val = $args[$idx];
 
@@ -150,6 +155,9 @@ sub parse_arguments {
     } elsif ( $val eq '-perl5' ) {
       $perl_version = ord $args[$idx + 1];
       $skipnext = 1;
+    } elsif ( $val eq '-experimental' ) {
+      $experimental = $args[$idx + 1];
+      $skipnext = 1;
     } elsif ( $val eq '-components' ) {
       $components = $args[$idx + 1];
       $skipnext = 1;
@@ -164,6 +172,7 @@ sub parse_arguments {
     perl_version => $perl_version,
     components   => $components,
     rest         => \@rest,
+    experimental => $experimental,
   };
 }
 
@@ -253,20 +262,28 @@ sub set_base {
 }
 
 sub gen_INIT {
-  my ($self, $perl_version, $custom_aliases, $custom_methods, $inheritor) = @_;
+  my ($self, $perl_version, $custom_aliases, $custom_methods, $inheritor, $experimental) = @_;
   sub {
     my $orig = $_[1]->{import_args};
     $_[1]->{import_args} = [];
     %$custom_aliases = ();
     @$custom_methods = ();
 
+    strict->import;
+    warnings->import;
+
     if ($perl_version) {
        require feature;
        feature->import(":5.$perl_version")
     }
 
-    strict->import;
-    warnings->import;
+    if ($experimental) {
+       require experimental;
+       die 'experimental arg must be an arrayref!'
+          unless ref $experimental && ref $experimental eq 'ARRAY';
+       # to avoid experimental referring to the method
+       experimental::->import(@$experimental)
+    }
 
     1;
   }
@@ -367,6 +384,13 @@ I love the new features in Perl 5.10 and 5.12, so I felt that it would be
 nice to remove the boiler plate of doing C<< use feature ':5.10' >> and
 add it to my sugar importer.  Feel free not to use this.
 
+=head2 -experimental
+
+ use DBIx::Class::Candy -experimental => ['signatures'];
+
+I would like to use signatures and postfix dereferencing in all of my
+C<DBIx::Class> classes.  This makes that goal trivial.
+
 =head1 IMPORTED SUBROUTINES
 
 Most of the imported subroutines are the same as what you get when you use
@@ -412,7 +436,8 @@ your results:
  use DBIx::Class::Candy
    -base      => 'MyApp::Schema::Result',
    -perl5     => v12,
-   -autotable => v1;
+   -autotable => v1,
+   -experimental => ['signatures'];
 
 You can set all of these for your whole schema if you define your own C<Candy>
 subclass as follows:
@@ -424,17 +449,22 @@ subclass as follows:
  sub base { $_[1] || 'MyApp::Schema::Result' }
  sub perl_version { 12 }
  sub autotable { 1 }
+ sub experimental { ['signatures'] }
 
 Note the C<< $_[1] || >> in C<base>.  All of these methods are passed the
 values passed in from the arguments to the subclass, so you can either throw
 them away, honor them, die on usage, or whatever.  To be clear, if you define
 your subclass, and someone uses it as follows:
 
- use MyApp::Schema::Candy -base => 'MyApp::Schema::Result', -perl5 => v18, -autotable => v1;
+ use MyApp::Schema::Candy
+    -base => 'MyApp::Schema::Result',
+    -perl5 => v18,
+    -autotable => v1,
+    -experimental => ['postderef'];
 
-Your C<base> method will get C<MyApp::Schema::Result>, your
-C<perl_version> will get C<18>, and your C<autotable> will get
-C<1>.
+Your C<base> method will get C<MyApp::Schema::Result>, your C<perl_version> will
+get C<18>, your C<experimental> will get C<['postderef']>, and your C<autotable>
+will get C<1>.
 
 =head1 SECONDARY API
 

@@ -26,5 +26,10 @@ sub test_perl_version { eval <<'EVAL'
 EVAL
 }
 
+sub test_experimental { eval <<'EVAL'
+   sub ($a) { $a + 1}
+EVAL
+}
+
 1;
 

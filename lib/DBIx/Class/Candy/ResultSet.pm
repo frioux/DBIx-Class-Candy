@@ -13,12 +13,15 @@ sub base { return $_[1] || 'DBIx::Class::ResultSet' }
 
 sub perl_version { return $_[1] }
 
+sub experimental { $_[1] }
+
 sub import {
    my $self = shift;
 
    my $inheritor = caller(0);
    my $args         = $self->parse_arguments(\@_);
    my $perl_version = $self->perl_version($args->{perl_version});
+   my $experimental = $self->experimental($args->{experimental});
    my @rest         = @{$args->{rest}};
 
    $self->set_base($inheritor, $args->{base});
@@ -27,7 +30,7 @@ sub import {
    @_ = ($self, @rest);
    my $import = build_exporter({
       installer  => $self->installer,
-      collectors => [ INIT => $self->gen_INIT($perl_version, $inheritor) ],
+      collectors => [ INIT => $self->gen_INIT($perl_version, $inheritor, $experimental) ],
    });
 
    goto $import
@@ -42,6 +45,8 @@ sub parse_arguments {
   my @rest;
   my $perl_version = undef;
   my $components   = [];
+  my $experimental;
+
   for my $idx ( 0 .. $#args ) {
     my $val = $args[$idx];
 
@@ -57,6 +62,9 @@ sub parse_arguments {
     } elsif ( $val eq '-perl5' ) {
       $perl_version = ord $args[$idx + 1];
       $skipnext = 1;
+    } elsif ( $val eq '-experimental' ) {
+      $experimental = $args[$idx + 1];
+      $skipnext = 1;
     } elsif ( $val eq '-components' ) {
       $components = $args[$idx + 1];
       $skipnext = 1;
@@ -70,6 +78,7 @@ sub parse_arguments {
     perl_version => $perl_version,
     components   => $components,
     rest         => \@rest,
+    experimental => $experimental,
   };
 }
 
@@ -98,18 +107,27 @@ sub set_base {
 }
 
 sub gen_INIT {
-  my ($self, $perl_version, $inheritor) = @_;
+  my ($self, $perl_version, $inheritor, $experimental) = @_;
   sub {
     my $orig = $_[1]->{import_args};
     $_[1]->{import_args} = [];
+
+    strict->import;
+    warnings->import;
 
     if ($perl_version) {
        require feature;
        feature->import(":5.$perl_version")
     }
 
-    strict->import;
-    warnings->import;
+    if ($experimental) {
+       require experimental;
+       die 'experimental arg must be an arrayref!'
+          unless ref $experimental && ref $experimental eq 'ARRAY';
+       # to avoid experimental referring to the method
+       experimental::->import(@$experimental)
+    }
+
     mro::set_mro($inheritor, 'c3');
 
     1;
@@ -188,7 +206,8 @@ your resultsets:
 
  use DBIx::Class::Candy::ResultSet
    -base      => 'MyApp::Schema::ResultSet',
-   -perl5     => v20;
+   -perl5     => v20,
+   -experimental => ['signatures'];
 
 You can set all of these for your whole schema if you define your own C<Candy::ResultSet>
 subclass as follows:
@@ -199,6 +218,7 @@ subclass as follows:
 
  sub base { $_[1] || 'MyApp::Schema::ResultSEt' }
  sub perl_version { 20 }
+ sub experimental { ['signatures'] }
 
 Note the C<< $_[1] || >> in C<base>.  All of these methods are passed the
 values passed in from the arguments to the subclass, so you can either throw
@@ -207,7 +227,8 @@ your subclass, and someone uses it as follows:
 
  use MyApp::Schema::Candy::ResultSet
     -base => 'MyApp::Schema::ResultSet',
-    -perl5 => v18;
+    -perl5 => v18,
+   -experimental => ['postderef'];
 
-Your C<base> method will get C<MyApp::Schema::ResultSet> and your
-C<perl_version> will get C<18>.
+Your C<base> method will get C<MyApp::Schema::ResultSet>, your C<experimental>
+will get C<['postderef']>, and your C<perl_version> will get C<18>.
