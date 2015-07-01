@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+use MRO::Compat;
 
 use lib 't/lib';
 use A::Schema;
@@ -10,6 +11,7 @@ use A::Schema::Result::Statistic;
 my $result_class = A::Schema->resultset('Album')->result_class;
 isa_ok $result_class, 'DBIx::Class::Core';
 
+is(mro::get_mro($result_class), 'c3', 'mro');
 is( $result_class->table, 'albums', 'table set correctly' );
 my @cols = $result_class->columns;
 is( $cols[0], 'id', 'id column set correctly' );

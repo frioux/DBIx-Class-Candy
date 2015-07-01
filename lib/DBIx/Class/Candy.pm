@@ -285,6 +285,8 @@ sub gen_INIT {
        experimental::->import(@$experimental)
     }
 
+    mro::set_mro($inheritor, 'c3');
+
     1;
   }
 }

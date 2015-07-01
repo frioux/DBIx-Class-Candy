@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Set C3 on ResultClasses in addition to ResultSets
 
 0.004000  2015-06-04 23:05:14-07:00 America/Los_Angeles
   - Add `-experimental` import
