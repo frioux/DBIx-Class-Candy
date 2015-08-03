@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.005000  2015-08-02 20:37:38-07:00 America/Los_Angeles
   - Add 'singular' autotable version (Good idea Dagfinn Ilmari Mannsåker!)
     (Resolves GH#10)
 
