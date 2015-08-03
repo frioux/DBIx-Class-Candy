@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Add 'singular' autotable version (Good idea Dagfinn Ilmari Mannsåker!)
+    (Resolves GH#10)
 
 0.004001  2015-07-01 15:13:21-07:00 America/Los_Angeles
   - Set C3 on ResultClasses in addition to ResultSets

@@ -34,4 +34,18 @@ subtest v1 => sub { # {{{
    );
 };
 
+subtest singular => sub {
+   is(
+      DBIx::Class::Candy->gen_table('MyApp::Schema::Result::Cat', 'singular'),
+      'cat',
+      'simple name'
+   );
+
+   is(
+      DBIx::Class::Candy->gen_table('MyApp::Schema::Result::Traffic::Ticket', 'singular'),
+      'traffic_ticket',
+      'name with ::'
+   );
+};
+
 done_testing;
