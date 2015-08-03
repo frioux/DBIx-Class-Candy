@@ -45,19 +45,24 @@ sub autotable { $_[1] }
 
 sub experimental { $_[1] }
 
+sub _extract_part {
+   my ($self, $class) = @_;
+   if (my ( $part ) = $class =~ /(?:::Schema)?::Result::(.+)$/) {
+      return $part
+   } else {
+      croak 'unrecognized naming scheme!'
+   }
+}
+
 sub gen_table {
    my ( $self, $class, $version ) = @_;
    if ($version == 1) {
-      if (my ( $part ) = $class =~ /(?:::Schema)?::Result::(.+)$/) {
-         require Lingua::EN::Inflect;
-         require String::CamelCase;
-         $part =~ s/:://g;
-         $part = String::CamelCase::decamelize($part);
-         return join q{_}, split /\s+/,
-            Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
-      } else {
-         croak 'unrecognized naming scheme!'
-      }
+      my $part = $self->_extract_part($class);
+      require Lingua::EN::Inflect;
+      require String::CamelCase;
+      $part =~ s/:://g;
+      $part = String::CamelCase::decamelize($part);
+      return join q{_}, split /\s+/, Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
    }
 }
 
@@ -150,7 +155,8 @@ sub parse_arguments {
       $base = $args[$idx + 1];
       $skipnext = 1;
     } elsif ( $val eq '-autotable' ) {
-      $autotable = ord $args[$idx + 1];
+      $autotable = $args[$idx + 1];
+      $autotable = ord $autotable if length $autotable == 1;
       $skipnext = 1;
     } elsif ( $val eq '-perl5' ) {
       $perl_version = ord $args[$idx + 1];
