@@ -29,7 +29,7 @@ subtest v1 => sub { # {{{
       exception {
          DBIx::Class::Candy->gen_table('MyApp::DB::Pal', 1)
       },
-      qr(^unrecognized naming scheme! at t/autotable\.t),
+      qr(^unrecognized naming scheme! at t[\\/]autotable\.t),
       'unknown naming scheme'
    );
 };
