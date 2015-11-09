@@ -350,7 +350,7 @@ L<DBIx::Class> results
 
 =item *
 
-makes a few aliases to make some of the original method names a shorter or
+makes a few aliases to make some of the original method names shorter or
 more clear
 
 =item *
@@ -560,7 +560,7 @@ ignore.  For example, one might just do the following:
    lc $class;
  }
 
-Which would tranform C<MyApp::Schema::Result::Foo> into
+Which would transform C<MyApp::Schema::Result::Foo> into
 C<myapp_schema_result_foo>.
 
 Or maybe instead of using the standard C<MyApp::Schema::Result> namespace you
