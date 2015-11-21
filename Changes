@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.005001  2015-11-20 23:26:06-08:00 America/Los_Angeles
   - Fix test failure on Win32 (Thanks Peter Evans!)
 
 0.005000  2015-08-02 20:37:38-07:00 America/Los_Angeles
