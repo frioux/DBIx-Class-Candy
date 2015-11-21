@@ -1,0 +1,23 @@
+version: '{build}'
+branches:
+  except:
+    - '/^wip/'
+    - '/^blocked/'
+shallow_clone: true
+
+environment:
+  matrix:
+    - perl_type: cygwin
+
+install:
+  - 'cinst -y curl'
+  - 'call .appveyor.cmd perl_setup'
+  - 'call .appveyor.cmd local_lib'
+  - 'set'
+  - 'perl -V'
+  - 'curl -k -L https://cpanmin.us/ | perl - --self-upgrade -v'
+  - 'perl -S cpanm --installdeps -n --with-develop --with-recommends .'
+
+test_script:
+  - '%make% prove -lrs t'
+
