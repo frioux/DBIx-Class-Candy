@@ -54,19 +54,29 @@ sub _extract_part {
    }
 }
 
+my $decamelize = sub {
+   my $s = shift;
+   $s =~ s{([^a-zA-Z]?)([A-Z]*)([A-Z])([a-z]?)}{
+      my $fc = pos($s)==0;
+      my ($p0,$p1,$p2,$p3) = ($1,lc$2,lc$3,$4);
+      my $t = $p0 || $fc ? $p0 : '_';
+      $t .= $p3 ? $p1 ? "${p1}_$p2$p3" : "$p2$p3" : "$p1$p2";
+      $t;
+   }ge;
+   $s;
+};
+
 sub gen_table {
    my ( $self, $class, $version ) = @_;
    if ($version eq 'singular') {
       my $part = $self->_extract_part($class);
-      require String::CamelCase;
       $part =~ s/:://g;
-      return String::CamelCase::decamelize($part);
+      return $decamelize->($part);
    } elsif ($version == 1) {
       my $part = $self->_extract_part($class);
       require Lingua::EN::Inflect;
-      require String::CamelCase;
       $part =~ s/:://g;
-      $part = String::CamelCase::decamelize($part);
+      $part = $decamelize->($part);
       return join q{_}, split /\s+/, Lingua::EN::Inflect::PL(join q{ }, split /_/, $part);
    }
 }
